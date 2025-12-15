@@ -11,7 +11,7 @@
         { "taskName": "OpenRGB noc",        "vbsName": "8-night",     "time": "03:00",    "profile": "8-purple",  "hourStart": 2,     "hourEnd": 5  }
     ],
     "extras": [
-        { "vbsName": "light", "profile": "8-white" },
+        { "vbsName": "light", "profile": "9-white" },
         { "vbsName": "dark",  "profile": "0-black" }
     ],
     "rainbow": [
@@ -23,7 +23,7 @@
         { "vbsName": "F6", "profile": "UC-06-8F0" },
         { "vbsName": "F7", "profile": "UC-07-FF0" },
         { "vbsName": "F8", "profile": "UC-08-F80" },
-        { "vbsName": "F8", "profile": "UC-08-F00" },
+        { "vbsName": "F9", "profile": "UC-09-F00" },
         { "vbsName": "F10","profile": "UC-10-F08" },
         { "vbsName": "F11","profile": "UC-11-F0F" },
         { "vbsName": "F12","profile": "UC-12-80F" }
