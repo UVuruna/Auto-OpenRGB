@@ -9,18 +9,19 @@ set /a hour=%hour%
 REM echo SAT JE: %hour%
 REM pause
 
-if %hour% LSS 2 goto UC_01_00F
-if %hour% GEQ 2 if %hour% LSS 4 goto UC_02_08F
-if %hour% GEQ 4 if %hour% LSS 6 goto UC_03_0FF
-if %hour% GEQ 6 if %hour% LSS 8 goto UC_04_0F8
-if %hour% GEQ 8 if %hour% LSS 10 goto UC_05_0F0
-if %hour% GEQ 10 if %hour% LSS 12 goto UC_06_8F0
-if %hour% GEQ 12 if %hour% LSS 14 goto UC_07_FF0
-if %hour% GEQ 14 if %hour% LSS 16 goto UC_08_F80
-if %hour% GEQ 16 if %hour% LSS 18 goto UC_09_F00
-if %hour% GEQ 18 if %hour% LSS 20 goto UC_10_F08
-if %hour% GEQ 20 if %hour% LSS 22 goto UC_11_F0F
-if %hour% GEQ 22 goto UC_12_80F
+if %hour% GEQ 3 if %hour% LSS 5 goto UC_01_00F
+if %hour% GEQ 5 if %hour% LSS 7 goto UC_02_08F
+if %hour% GEQ 7 if %hour% LSS 9 goto UC_03_0FF
+if %hour% GEQ 9 if %hour% LSS 11 goto UC_04_0F8
+if %hour% GEQ 11 if %hour% LSS 13 goto UC_05_0F0
+if %hour% GEQ 13 if %hour% LSS 15 goto UC_06_8F0
+if %hour% GEQ 15 if %hour% LSS 17 goto UC_07_FF0
+if %hour% GEQ 17 if %hour% LSS 19 goto UC_08_F80
+if %hour% GEQ 19 if %hour% LSS 21 goto UC_09_F00
+if %hour% GEQ 21 if %hour% LSS 23 goto UC_10_F08
+if %hour% GEQ 23 goto UC_11_F0F
+if %hour% LSS 1 goto UC_11_F0F
+if %hour% GEQ 1 if %hour% LSS 3 goto UC_12_80F
 
 goto end
 

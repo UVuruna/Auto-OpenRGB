@@ -1,7 +1,7 @@
 {
     "openRGBPath": "C:\\Program Files\\OpenRGB\\OpenRGB.exe",
     "schedules": {
-        "startHour": 5,
+        "startHour": 3,
         "items": [
             { "taskName": "OpenRGB zora",       "vbsName": "1-dawn",      "profile": "1-blue"    },
             { "taskName": "OpenRGB jutro",      "vbsName": "2-morning",   "profile": "2-cyan"    },
@@ -18,7 +18,7 @@
         { "vbsName": "dark",  "profile": "0-black" }
     ],
     "rainbow": {
-        "startHour": 0,
+        "startHour": 3,
         "items": [
             { "vbsName": "F1",  "profile": "UC-01-00F" },
             { "vbsName": "F2",  "profile": "UC-02-08F" },
