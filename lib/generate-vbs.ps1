@@ -1,7 +1,7 @@
-# generate-vbs.ps1 - Generiši sve VBS fajlove
+# generate-vbs.ps1 - Generate all VBS files
 
-# OpenRGB-Server.vbs u startup folderu
-Write-Host "Kreiram OpenRGB-Server.vbs u Startup folderu..." -ForegroundColor Yellow
+# OpenRGB-Server.vbs in startup folder
+Write-Host "Creating OpenRGB-Server.vbs in Startup folder..." -ForegroundColor Yellow
 
 $startupPath = [Environment]::GetFolderPath('Startup')
 $script:serverVbsPath = Join-Path $startupPath "OpenRGB-Server.vbs"
@@ -13,10 +13,10 @@ WScript.Quit
 "@
 
 $serverVbsContent | Out-File -FilePath $serverVbsPath -Encoding ASCII
-Write-Host "Kreiran: $serverVbsPath" -ForegroundColor Green
+Write-Host "Created: $serverVbsPath" -ForegroundColor Green
 
-# VBS fajlovi za cycle profile
-Write-Host "Generisem VBS fajlove u cycle folderu..." -ForegroundColor Yellow
+# VBS files for cycle profiles
+Write-Host "Generating VBS files in cycle folder..." -ForegroundColor Yellow
 
 foreach ($s in $config.schedules.items) {
     $vbsName = $s.vbsName + ".vbs"
@@ -30,7 +30,7 @@ WScript.Quit
 "@
 
     $vbsContent | Out-File -FilePath $vbsPath -Encoding ASCII
-    Write-Host "Kreiran: cycle\$vbsName -> $prof" -ForegroundColor Green
+    Write-Host "Created: cycle\$vbsName -> $prof" -ForegroundColor Green
 }
 
 foreach ($e in $config.extras) {
@@ -45,11 +45,11 @@ WScript.Quit
 "@
 
     $vbsContent | Out-File -FilePath $vbsPath -Encoding ASCII
-    Write-Host "Kreiran: cycle\$vbsName -> $prof" -ForegroundColor Green
+    Write-Host "Created: cycle\$vbsName -> $prof" -ForegroundColor Green
 }
 
-# VBS fajlovi za rainbow profile
-Write-Host "Generisem VBS fajlove u rainbow folderu..." -ForegroundColor Yellow
+# VBS files for rainbow profiles
+Write-Host "Generating VBS files in rainbow folder..." -ForegroundColor Yellow
 
 foreach ($e in $config.rainbow.items) {
     $vbsName = $e.vbsName + ".vbs"
@@ -63,5 +63,5 @@ WScript.Quit
 "@
 
     $vbsContent | Out-File -FilePath $vbsPath -Encoding ASCII
-    Write-Host "Kreiran: rainbow\$vbsName -> $prof" -ForegroundColor Green
+    Write-Host "Created: rainbow\$vbsName -> $prof" -ForegroundColor Green
 }

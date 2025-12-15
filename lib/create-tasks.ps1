@@ -1,7 +1,7 @@
-# create-tasks.ps1 - Kreiraj Task Scheduler taskove
+# create-tasks.ps1 - Create Task Scheduler tasks
 
 # Autoprofile task (at log on + resume from sleep)
-Write-Host "Kreiram autoprofile task..." -ForegroundColor Yellow
+Write-Host "Creating autoprofile task..." -ForegroundColor Yellow
 
 $autoprofileAction = New-ScheduledTaskAction -Execute "cmd.exe" -Argument "/c `"$autoprofilePath`""
 
@@ -22,10 +22,10 @@ $autoprofileTask = New-ScheduledTask -Action $autoprofileAction -Trigger @($logo
 $autoprofileTask.Author = "UV"
 
 Register-ScheduledTask -TaskName "OpenRGB autoprofile" -InputObject $autoprofileTask -Force | Out-Null
-Write-Host "Kreiran task: OpenRGB autoprofile (at log on + resume from sleep)" -ForegroundColor Green
+Write-Host "Created task: OpenRGB autoprofile (at log on + resume from sleep)" -ForegroundColor Green
 
-# Dnevni taskovi
-Write-Host "Kreiram dnevne taskove..." -ForegroundColor Yellow
+# Daily tasks
+Write-Host "Creating daily tasks..." -ForegroundColor Yellow
 
 $items = $config.schedules.items
 $startHour = [int]$config.schedules.startHour
@@ -37,7 +37,7 @@ for ($i = 0; $i -lt $count; $i++) {
     $taskName = $item.taskName
     $prof = $item.profile
 
-    # Izracunaj vreme iz startHour i pozicije
+    # Calculate time from startHour and position
     $hour = [int](($startHour + $duration * $i) % 24)
     $time = "{0:D2}:00" -f $hour
 
@@ -50,5 +50,5 @@ for ($i = 0; $i -lt $count; $i++) {
     $task.Author = "UV"
 
     Register-ScheduledTask -TaskName $taskName -InputObject $task -Force | Out-Null
-    Write-Host "Kreiran task: $taskName u $time -> $prof" -ForegroundColor Green
+    Write-Host "Created task: $taskName at $time -> $prof" -ForegroundColor Green
 }

@@ -1,10 +1,10 @@
-# init.ps1 - Ucitaj config, kreiraj foldere, obrisi stare taskove
+# init.ps1 - Load config, create folders, delete old tasks
 
-# Provera admin privilegija
+# Check admin privileges
 $isAdmin = ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole]::Administrator)
 if (-not $isAdmin) {
-    Write-Host "GRESKA: Skripta mora biti pokrenuta kao Administrator!" -ForegroundColor Red
-    Write-Host "Desni klik na Start -> Terminal (Admin)" -ForegroundColor Yellow
+    Write-Host "ERROR: Script must be run as Administrator!" -ForegroundColor Red
+    Write-Host "Right-click Start -> Terminal (Admin)" -ForegroundColor Yellow
     exit 1
 }
 
@@ -16,29 +16,29 @@ $script:autorainbowPath = Join-Path $generatedPath "autorainbow.bat"
 $script:cyclePath = Join-Path $scriptDir "cycle"
 $script:rainbowPath = Join-Path $scriptDir "rainbow"
 
-# Kreiraj foldere ako ne postoje
+# Create folders if they don't exist
 if (-not (Test-Path $generatedPath)) {
     New-Item -ItemType Directory -Path $generatedPath | Out-Null
-    Write-Host "Kreiran folder: generated" -ForegroundColor Green
+    Write-Host "Created folder: generated" -ForegroundColor Green
 }
 
 if (-not (Test-Path $cyclePath)) {
     New-Item -ItemType Directory -Path $cyclePath | Out-Null
-    Write-Host "Kreiran folder: cycle" -ForegroundColor Green
+    Write-Host "Created folder: cycle" -ForegroundColor Green
 }
 
 if (-not (Test-Path $rainbowPath)) {
     New-Item -ItemType Directory -Path $rainbowPath | Out-Null
-    Write-Host "Kreiran folder: rainbow" -ForegroundColor Green
+    Write-Host "Created folder: rainbow" -ForegroundColor Green
 }
 
-# Ucitaj JSON config
+# Load JSON config
 $script:config = Get-Content $configPath -Raw | ConvertFrom-Json
 $script:openRGBPath = $config.openRGBPath
 
 Write-Host "=== OpenRGB Setup ===" -ForegroundColor Cyan
-Write-Host "Ucitavam konfiguraciju iz config.json..." -ForegroundColor Yellow
+Write-Host "Loading configuration from config.json..." -ForegroundColor Yellow
 
-# Obrisi postojece OpenRGB taskove
-Write-Host "Brisem postojece OpenRGB taskove..." -ForegroundColor Yellow
+# Delete existing OpenRGB tasks
+Write-Host "Deleting existing OpenRGB tasks..." -ForegroundColor Yellow
 Get-ScheduledTask | Where-Object { $_.TaskName -like "OpenRGB*" } | Unregister-ScheduledTask -Confirm:$false -ErrorAction SilentlyContinue
