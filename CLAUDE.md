@@ -202,13 +202,27 @@ Da li želiš da objasnim detaljnije?"
 
 ---
 
-### Rule #5: Serbian Conversation
+### Rule #5: Language Rules
 
-**Communicate with the user in Serbian (Latin script).**
+**Conversation vs Code/Documentation:**
 
-- All conversation with the user should be in Serbian
-- Code comments can be in English or Serbian
-- Documentation files can be in Serbian for this project
+| Context | Language |
+|---------|----------|
+| Conversation with user | Serbian (Latin script) |
+| Code comments | English |
+| Documentation files (.md) | English |
+| Variable/function names | English |
+
+**Example:**
+```
+❌ WRONG
+# Ovo je funkcija za ucitavanje configa
+$putanjaDoFajla = "config.json"
+
+✅ CORRECT
+# Load configuration from JSON file
+$configPath = "config.json"
+```
 
 ---
 

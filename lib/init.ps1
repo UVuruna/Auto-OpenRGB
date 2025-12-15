@@ -10,11 +10,18 @@ if (-not $isAdmin) {
 
 $script:scriptDir = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $script:configPath = Join-Path $scriptDir "config.json"
-$script:autoprofilePath = Join-Path $scriptDir "autoprofile.bat"
+$script:generatedPath = Join-Path $scriptDir "generated"
+$script:autoprofilePath = Join-Path $generatedPath "autoprofile.bat"
+$script:autorainbowPath = Join-Path $generatedPath "autorainbow.bat"
 $script:cyclePath = Join-Path $scriptDir "cycle"
 $script:rainbowPath = Join-Path $scriptDir "rainbow"
 
 # Kreiraj foldere ako ne postoje
+if (-not (Test-Path $generatedPath)) {
+    New-Item -ItemType Directory -Path $generatedPath | Out-Null
+    Write-Host "Kreiran folder: generated" -ForegroundColor Green
+}
+
 if (-not (Test-Path $cyclePath)) {
     New-Item -ItemType Directory -Path $cyclePath | Out-Null
     Write-Host "Kreiran folder: cycle" -ForegroundColor Green

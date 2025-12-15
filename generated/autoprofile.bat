@@ -9,7 +9,6 @@ set /a hour=%hour%
 REM echo SAT JE: %hour%
 REM pause
 
-if %hour% GEQ 2 if %hour% LSS 5 goto 8_purple
 if %hour% GEQ 5 if %hour% LSS 8 goto 1_blue
 if %hour% GEQ 8 if %hour% LSS 11 goto 2_cyan
 if %hour% GEQ 11 if %hour% LSS 14 goto 3_green
@@ -18,6 +17,7 @@ if %hour% GEQ 17 if %hour% LSS 20 goto 5_orange
 if %hour% GEQ 20 if %hour% LSS 23 goto 6_red
 if %hour% GEQ 23 goto 7_magenta
 if %hour% LSS 2 goto 7_magenta
+if %hour% GEQ 2 if %hour% LSS 5 goto 8_purple
 
 goto end
 

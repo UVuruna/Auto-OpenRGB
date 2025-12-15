@@ -18,10 +18,19 @@ Write-Host "Kreiran task: OpenRGB autoprofile (at log on)" -ForegroundColor Gree
 # Dnevni taskovi
 Write-Host "Kreiram dnevne taskove..." -ForegroundColor Yellow
 
-foreach ($s in $config.schedules) {
-    $taskName = $s.taskName
-    $time = $s.time
-    $prof = $s.profile
+$items = $config.schedules.items
+$startHour = [int]$config.schedules.startHour
+$count = $items.Count
+$duration = [int][math]::Floor(24 / $count)
+
+for ($i = 0; $i -lt $count; $i++) {
+    $item = $items[$i]
+    $taskName = $item.taskName
+    $prof = $item.profile
+
+    # Izracunaj vreme iz startHour i pozicije
+    $hour = [int](($startHour + $duration * $i) % 24)
+    $time = "{0:D2}:00" -f $hour
 
     $action = New-ScheduledTaskAction -Execute $openRGBPath -Argument "-p `"$prof`""
     $trigger = New-ScheduledTaskTrigger -Daily -At $time

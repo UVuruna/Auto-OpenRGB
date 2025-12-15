@@ -4,18 +4,18 @@
 
 ## Purpose
 
-Generiše sve VBS fajlove za pokretanje OpenRGB profila.
+Generates all VBS files for running OpenRGB profiles.
 
 ## Dependencies
 
-- `$config` mora biti učitan (init.ps1)
-- `$openRGBPath`, `$cyclePath`, `$rainbowPath` moraju biti definisani (init.ps1)
+- `$config` must be loaded (init.ps1)
+- `$openRGBPath`, `$cyclePath`, `$rainbowPath` must be defined (init.ps1)
 
 ## What It Does
 
-1. **OpenRGB-Server.vbs** - Kreira u Windows Startup folderu
-2. **Cycle VBS** - Generiše VBS za schedules + extras u `cycle/` folderu
-3. **Rainbow VBS** - Generiše VBS za rainbow profile u `rainbow/` folderu
+1. **OpenRGB-Server.vbs** - Creates in Windows Startup folder
+2. **Cycle VBS** - Generates VBS for schedules + extras in `cycle/` folder
+3. **Rainbow VBS** - Generates VBS for rainbow profiles in `rainbow/` folder
 
 ## Generated Files
 
@@ -27,7 +27,7 @@ WshShell.Run """C:\...\OpenRGB.exe"" --server --startminimized", 0
 WScript.Quit
 ```
 
-Pokreće OpenRGB server pri startu Windows-a (skriven, bez prozora).
+Starts OpenRGB server at Windows startup (hidden, no window).
 
 ### cycle/*.vbs
 
@@ -37,16 +37,16 @@ WshShell.Run """C:\...\OpenRGB.exe"" -p ""1-blue""", 0
 WScript.Quit
 ```
 
-Generiše se za svaki:
-- `config.schedules[].vbsName`
+Generated for each:
+- `config.schedules.items[].vbsName`
 - `config.extras[].vbsName`
 
 ### rainbow/*.vbs
 
-Ista struktura kao cycle, generiše se za svaki `config.rainbow[].vbsName`.
+Same structure as cycle, generated for each `config.rainbow.items[].vbsName`.
 
 ## VBS Syntax Notes
 
-- `"""` = escaped quote u VBS stringu
-- `", 0` na kraju = pokreni skriveno (bez CMD prozora)
-- `WScript.Quit` = izlazi iz skripte nakon pokretanja
+- `"""` = escaped quote in VBS string
+- `", 0` at end = run hidden (no CMD window)
+- `WScript.Quit` = exits script after launching

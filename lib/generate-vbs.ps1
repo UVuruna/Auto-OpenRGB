@@ -18,7 +18,7 @@ Write-Host "Kreiran: $serverVbsPath" -ForegroundColor Green
 # VBS fajlovi za cycle profile
 Write-Host "Generisem VBS fajlove u cycle folderu..." -ForegroundColor Yellow
 
-foreach ($s in $config.schedules) {
+foreach ($s in $config.schedules.items) {
     $vbsName = $s.vbsName + ".vbs"
     $vbsPath = Join-Path $cyclePath $vbsName
     $prof = $s.profile
@@ -51,7 +51,7 @@ WScript.Quit
 # VBS fajlovi za rainbow profile
 Write-Host "Generisem VBS fajlove u rainbow folderu..." -ForegroundColor Yellow
 
-foreach ($e in $config.rainbow) {
+foreach ($e in $config.rainbow.items) {
     $vbsName = $e.vbsName + ".vbs"
     $vbsPath = Join-Path $rainbowPath $vbsName
     $prof = $e.profile

@@ -4,34 +4,36 @@
 
 ## Purpose
 
-Inicijalizacija okruženja pre generisanja fajlova. Prva skripta koju `setup.ps1` poziva.
+Environment initialization before generating files. First script that `setup.ps1` calls.
 
 ## Dependencies
 
-- Mora biti pokrenuta kao Administrator
-- `config.json` mora postojati u root folderu
+- Must be run as Administrator
+- `config.json` must exist in root folder
 
 ## What It Does
 
-1. **Admin Check** - Proverava da li je pokrenuto kao Administrator, izlazi ako nije
-2. **Define Variables** - Definiše globalne putanje (`$scriptDir`, `$configPath`, itd.)
-3. **Create Folders** - Kreira `cycle/` i `rainbow/` ako ne postoje
-4. **Load Config** - Učitava `config.json` u `$config` promenljivu
-5. **Cleanup** - Briše sve postojeće OpenRGB taskove iz Task Scheduler-a
+1. **Admin Check** - Checks if running as Administrator, exits if not
+2. **Define Variables** - Defines global paths (`$scriptDir`, `$configPath`, etc.)
+3. **Create Folders** - Creates `generated/`, `cycle/` and `rainbow/` if they don't exist
+4. **Load Config** - Loads `config.json` into `$config` variable
+5. **Cleanup** - Deletes all existing OpenRGB tasks from Task Scheduler
 
 ## Global Variables Set
 
 ```powershell
-$script:scriptDir        # Root folder projekta
-$script:configPath       # config.json putanja
-$script:autoprofilePath  # autoprofile.bat putanja
+$script:scriptDir        # Project root folder
+$script:configPath       # config.json path
+$script:generatedPath    # generated/ folder
+$script:autoprofilePath  # generated/autoprofile.bat path
+$script:autorainbowPath  # generated/autorainbow.bat path
 $script:cyclePath        # cycle/ folder
 $script:rainbowPath      # rainbow/ folder
-$script:config           # Učitan JSON
-$script:openRGBPath      # OpenRGB.exe putanja
+$script:config           # Loaded JSON
+$script:openRGBPath      # OpenRGB.exe path
 ```
 
 ## Error Handling
 
-- Ako nije admin → crvena poruka + exit 1
-- Ako config.json ne postoji → PowerShell greška (nije eksplicitno handlovano)
+- If not admin → red message + exit 1
+- If config.json doesn't exist → PowerShell error (not explicitly handled)

@@ -1,19 +1,19 @@
 # lib/
 
-Helper skripte za setup.ps1.
+Helper scripts for setup.ps1.
 
 ## Purpose
 
-Ovaj folder sadrži modularne PowerShell skripte koje `setup.ps1` poziva redom. Svaka skripta radi jednu stvar, što olakšava održavanje i debugging.
+This folder contains modular PowerShell scripts that `setup.ps1` calls in sequence. Each script does one thing, making maintenance and debugging easier.
 
 ## Contents
 
-| Fajl | Dokumentacija | Opis |
-|------|---------------|------|
-| init.ps1 | [init.md](init.md) | Inicijalizacija - config, folderi, cleanup |
-| generate-bat.ps1 | [generate-bat.md](generate-bat.md) | Generiše autoprofile.bat |
-| generate-vbs.ps1 | [generate-vbs.md](generate-vbs.md) | Generiše sve VBS fajlove |
-| create-tasks.ps1 | [create-tasks.md](create-tasks.md) | Kreira Task Scheduler taskove |
+| File | Documentation | Description |
+|------|---------------|-------------|
+| init.ps1 | [init.md](init.md) | Initialization - config, folders, cleanup |
+| generate-bat.ps1 | [generate-bat.md](generate-bat.md) | Generates autoprofile.bat and autorainbow.bat |
+| generate-vbs.ps1 | [generate-vbs.md](generate-vbs.md) | Generates all VBS files |
+| create-tasks.ps1 | [create-tasks.md](create-tasks.md) | Creates Task Scheduler tasks |
 
 ## Execution Order
 
@@ -27,21 +27,23 @@ flowchart LR
 
 ## Shared Variables
 
-`init.ps1` definiše globalne promenljive koje koriste sve ostale skripte:
+`init.ps1` defines global variables used by all other scripts:
 
-| Promenljiva | Opis |
-|-------------|------|
-| `$scriptDir` | Root folder projekta |
-| `$configPath` | Putanja do config.json |
-| `$config` | Učitan JSON config |
-| `$openRGBPath` | Putanja do OpenRGB.exe |
-| `$autoprofilePath` | Putanja do autoprofile.bat |
-| `$cyclePath` | Putanja do cycle/ foldera |
-| `$rainbowPath` | Putanja do rainbow/ foldera |
+| Variable | Description |
+|----------|-------------|
+| `$scriptDir` | Project root folder |
+| `$configPath` | Path to config.json |
+| `$config` | Loaded JSON config |
+| `$openRGBPath` | Path to OpenRGB.exe |
+| `$generatedPath` | Path to generated/ folder |
+| `$autoprofilePath` | Path to generated/autoprofile.bat |
+| `$autorainbowPath` | Path to generated/autorainbow.bat |
+| `$cyclePath` | Path to cycle/ folder |
+| `$rainbowPath` | Path to rainbow/ folder |
 
 ## Usage
 
-Ove skripte se NE pokreću direktno - poziva ih `setup.ps1` koristeći dot-sourcing:
+These scripts are NOT run directly - `setup.ps1` calls them using dot-sourcing:
 
 ```powershell
 . (Join-Path $libPath "init.ps1")

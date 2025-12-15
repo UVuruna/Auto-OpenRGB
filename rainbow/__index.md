@@ -1,48 +1,40 @@
 # rainbow/
 
-VBS skripte za rainbow (unicolor) RGB profile.
+VBS scripts for rainbow (unicolor) RGB profiles.
 
 ## Purpose
 
-Sadrži VBS fajlove za rainbow profile - jednobojni profili za brzi pristup preko tastature (F1-F12).
+Contains VBS files for rainbow profiles - single-color profiles for quick keyboard access.
 
 ## Contents
 
-Fajlovi se auto-generišu iz `config.json` (`rainbow` sekcija) kada se pokrene `setup.ps1`:
+Files are auto-generated from `config.json` (`rainbow.items` section) when `setup.ps1` runs:
 
-| Fajl | Profil | Boja |
-|------|--------|------|
-| F1.vbs | UC-01-00F | Plava |
-| F2.vbs | UC-02-08F | Plavo-ljubičasta |
-| F3.vbs | UC-03-0FF | Cyan |
-| F4.vbs | UC-04-0F8 | Cyan-zelena |
-| F5.vbs | UC-05-0F0 | Zelena |
-| F6.vbs | UC-06-8F0 | Žuto-zelena |
-| F7.vbs | UC-07-FF0 | Žuta |
-| F8.vbs | UC-08-F80 | Narandžasta |
-| F9.vbs | UC-08-F00 | Crvena |
-| F10.vbs | UC-10-F08 | Crveno-ružičasta |
-| F11.vbs | UC-11-F0F | Magenta |
-| F12.vbs | UC-12-80F | Ljubičasta |
+- One VBS per `rainbow.items` entry (format: `{vbsName}.vbs`)
+
+For current list of profiles, see [config.json](../config.json).
 
 ## Usage
 
-Namenjeno za keyboard shortcuts:
-- Dodeli svaki VBS na odgovarajući F-key
-- Koristi program kao AutoHotkey ili Windows shortcut
+Intended for keyboard shortcuts:
+- Assign each VBS to a corresponding key
+- Use a program like AutoHotkey or Windows shortcuts
+
+There is also [autorainbow.bat](../generated/__index.md) for automatic time-based profile selection.
 
 ## File Format
 
-Svi VBS fajlovi imaju istu strukturu:
+All VBS files have the same structure:
 
 ```vbs
 Set WshShell = CreateObject("WScript.Shell")
-WshShell.Run """C:\Program Files\OpenRGB\OpenRGB.exe"" -p ""UC-01-00F""", 0
+WshShell.Run """C:\Program Files\OpenRGB\OpenRGB.exe"" -p ""profile-name""", 0
 WScript.Quit
 ```
 
 ## Notes
 
-- Profili moraju postojati u OpenRGB pre korišćenja
-- Imena profila (UC-XX-XXX) su hex kodovi boja
-- Fajlovi se NE edituju ručno - edituj `config.json` pa pokreni `setup.ps1`
+- Profiles must exist in OpenRGB before use
+- Files are NOT edited manually - edit `config.json` then run `setup.ps1`
+- If OpenRGB server is running → instant change
+- If server is not running → 2-3 sec delay (OpenRGB starts up)
