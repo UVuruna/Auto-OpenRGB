@@ -1,0 +1,31 @@
+{
+    "openRGBPath": "C:\\Program Files\\OpenRGB\\OpenRGB.exe",
+    "schedules": [
+        { "taskName": "OpenRGB zora",       "vbsName": "1-dawn",      "time": "05:00",    "profile": "1-blue",    "hourStart": 5,     "hourEnd": 8  },
+        { "taskName": "OpenRGB jutro",      "vbsName": "2-morning",   "time": "08:00",    "profile": "2-cyan",    "hourStart": 8,     "hourEnd": 11 },
+        { "taskName": "OpenRGB podne",      "vbsName": "3-noon",      "time": "11:00",    "profile": "3-green",   "hourStart": 11,    "hourEnd": 14 },
+        { "taskName": "OpenRGB popodne",    "vbsName": "4-afternoon", "time": "14:00",    "profile": "4-yellow",  "hourStart": 14,    "hourEnd": 17 },
+        { "taskName": "OpenRGB vece",       "vbsName": "5-evening",   "time": "17:00",    "profile": "5-orange",  "hourStart": 17,    "hourEnd": 20 },
+        { "taskName": "OpenRGB sumrak",     "vbsName": "6-dusk",      "time": "20:00",    "profile": "6-red",     "hourStart": 20,    "hourEnd": 23 },
+        { "taskName": "OpenRGB ponoc",      "vbsName": "7-midnight",  "time": "23:00",    "profile": "7-magenta", "hourStart": 23,    "hourEnd": 2  },
+        { "taskName": "OpenRGB noc",        "vbsName": "8-night",     "time": "03:00",    "profile": "8-purple",  "hourStart": 2,     "hourEnd": 5  }
+    ],
+    "extras": [
+        { "vbsName": "light", "profile": "8-white" },
+        { "vbsName": "dark",  "profile": "0-black" }
+    ],
+    "rainbow": [
+        { "vbsName": "F1", "profile": "UC-01-00F" },
+        { "vbsName": "F2", "profile": "UC-02-08F" },
+        { "vbsName": "F3", "profile": "UC-03-0FF" },
+        { "vbsName": "F4", "profile": "UC-04-0F8" },
+        { "vbsName": "F5", "profile": "UC-05-0F0" },
+        { "vbsName": "F6", "profile": "UC-06-8F0" },
+        { "vbsName": "F7", "profile": "UC-07-FF0" },
+        { "vbsName": "F8", "profile": "UC-08-F80" },
+        { "vbsName": "F8", "profile": "UC-08-F00" },
+        { "vbsName": "F10","profile": "UC-10-F08" },
+        { "vbsName": "F11","profile": "UC-11-F0F" },
+        { "vbsName": "F12","profile": "UC-12-80F" }
+    ]
+}
