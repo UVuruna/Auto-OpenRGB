@@ -22,35 +22,35 @@ if %hour% LSS 2 goto 7_magenta
 goto end
 
 :1_blue
-"C:\Program Files\OpenRGB\OpenRGB.exe" --client -p "1-blue"
+"C:\Program Files\OpenRGB\OpenRGB.exe" -p "1-blue"
 goto end
 
 :2_cyan
-"C:\Program Files\OpenRGB\OpenRGB.exe" --client -p "2-cyan"
+"C:\Program Files\OpenRGB\OpenRGB.exe" -p "2-cyan"
 goto end
 
 :3_green
-"C:\Program Files\OpenRGB\OpenRGB.exe" --client -p "3-green"
+"C:\Program Files\OpenRGB\OpenRGB.exe" -p "3-green"
 goto end
 
 :4_yellow
-"C:\Program Files\OpenRGB\OpenRGB.exe" --client -p "4-yellow"
+"C:\Program Files\OpenRGB\OpenRGB.exe" -p "4-yellow"
 goto end
 
 :5_orange
-"C:\Program Files\OpenRGB\OpenRGB.exe" --client -p "5-orange"
+"C:\Program Files\OpenRGB\OpenRGB.exe" -p "5-orange"
 goto end
 
 :6_red
-"C:\Program Files\OpenRGB\OpenRGB.exe" --client -p "6-red"
+"C:\Program Files\OpenRGB\OpenRGB.exe" -p "6-red"
 goto end
 
 :7_magenta
-"C:\Program Files\OpenRGB\OpenRGB.exe" --client -p "7-magenta"
+"C:\Program Files\OpenRGB\OpenRGB.exe" -p "7-magenta"
 goto end
 
 :8_purple
-"C:\Program Files\OpenRGB\OpenRGB.exe" --client -p "8-purple"
+"C:\Program Files\OpenRGB\OpenRGB.exe" -p "8-purple"
 goto end
 
 :end

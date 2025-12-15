@@ -23,7 +23,7 @@ foreach ($s in $config.schedules) {
     $time = $s.time
     $prof = $s.profile
 
-    $action = New-ScheduledTaskAction -Execute $openRGBPath -Argument "--client -p `"$prof`""
+    $action = New-ScheduledTaskAction -Execute $openRGBPath -Argument "-p `"$prof`""
     $trigger = New-ScheduledTaskTrigger -Daily -At $time
     $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 5)
     $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest

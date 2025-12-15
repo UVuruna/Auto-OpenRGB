@@ -25,7 +25,7 @@ foreach ($s in $config.schedules) {
 
     $vbsContent = @"
 Set WshShell = CreateObject("WScript.Shell")
-WshShell.Run """$openRGBPath"" --client -p ""$prof""", 0
+WshShell.Run """$openRGBPath"" -p ""$prof""", 0
 WScript.Quit
 "@
 
@@ -40,7 +40,7 @@ foreach ($e in $config.extras) {
 
     $vbsContent = @"
 Set WshShell = CreateObject("WScript.Shell")
-WshShell.Run """$openRGBPath"" --client -p ""$prof""", 0
+WshShell.Run """$openRGBPath"" -p ""$prof""", 0
 WScript.Quit
 "@
 
@@ -58,7 +58,7 @@ foreach ($e in $config.rainbow) {
 
     $vbsContent = @"
 Set WshShell = CreateObject("WScript.Shell")
-WshShell.Run """$openRGBPath"" --client -p ""$prof""", 0
+WshShell.Run """$openRGBPath"" -p ""$prof""", 0
 WScript.Quit
 "@
 

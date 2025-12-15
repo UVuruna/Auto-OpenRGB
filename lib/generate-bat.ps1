@@ -48,7 +48,7 @@ foreach ($s in $config.schedules) {
     $prof = $s.profile
     $label = $prof -replace '-','_'
     $batContent += ":$label`r`n"
-    $batContent += "`"$openRGBPath`" --client -p `"$prof`"`r`n"
+    $batContent += "`"$openRGBPath`" -p `"$prof`"`r`n"
     $batContent += "goto end`r`n`r`n"
 }
 
