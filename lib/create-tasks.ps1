@@ -1,19 +1,28 @@
 # create-tasks.ps1 - Kreiraj Task Scheduler taskove
 
-# Autoprofile task (at log on)
+# Autoprofile task (at log on + resume from sleep)
 Write-Host "Kreiram autoprofile task..." -ForegroundColor Yellow
 
 $autoprofileAction = New-ScheduledTaskAction -Execute "cmd.exe" -Argument "/c `"$autoprofilePath`""
-$autoprofileTrigger = New-ScheduledTaskTrigger -AtLogOn
-$autoprofileTrigger.UserId = "$env:USERDOMAIN\$env:USERNAME"
+
+# Trigger 1: At Log On
+$logonTrigger = New-ScheduledTaskTrigger -AtLogOn
+$logonTrigger.UserId = "$env:USERDOMAIN\$env:USERNAME"
+
+# Trigger 2: Resume from sleep (Event ID 1 from Power-Troubleshooter)
+$CIMTriggerClass = Get-CimClass -ClassName MSFT_TaskEventTrigger -Namespace Root/Microsoft/Windows/TaskScheduler
+$sleepTrigger = New-CimInstance -CimClass $CIMTriggerClass -ClientOnly
+$sleepTrigger.Subscription = '<QueryList><Query Id="0" Path="System"><Select Path="System">*[System[Provider[@Name=''Microsoft-Windows-Power-Troubleshooter''] and EventID=1]]</Select></Query></QueryList>'
+$sleepTrigger.Enabled = $true
+
 $autoprofileSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 5)
 $autoprofilePrincipal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
 
-$autoprofileTask = New-ScheduledTask -Action $autoprofileAction -Trigger $autoprofileTrigger -Settings $autoprofileSettings -Principal $autoprofilePrincipal
+$autoprofileTask = New-ScheduledTask -Action $autoprofileAction -Trigger @($logonTrigger, $sleepTrigger) -Settings $autoprofileSettings -Principal $autoprofilePrincipal
 $autoprofileTask.Author = "UV"
 
 Register-ScheduledTask -TaskName "OpenRGB autoprofile" -InputObject $autoprofileTask -Force | Out-Null
-Write-Host "Kreiran task: OpenRGB autoprofile (at log on)" -ForegroundColor Green
+Write-Host "Kreiran task: OpenRGB autoprofile (at log on + resume from sleep)" -ForegroundColor Green
 
 # Dnevni taskovi
 Write-Host "Kreiram dnevne taskove..." -ForegroundColor Yellow
