@@ -1,4 +1,76 @@
-# generate-bat.ps1 - Generate autoprofile.bat and autorainbow.bat
+# generate-bat.ps1 - Generate autoprofile.vbs, autoprofile.bat and autorainbow.bat
+
+# Function to generate VBS content with retry logic
+function New-AutoprofileVbs {
+    param (
+        [array]$Items,
+        [int]$StartHour,
+        [string]$OpenRGBPath
+    )
+
+    $count = $Items.Count
+    $duration = [int][math]::Floor(24 / $count)
+
+    $vbsContent = @"
+' Auto-generated file - do not edit manually!
+' Edit config.json and run setup.ps1
+
+Set WshShell = CreateObject("WScript.Shell")
+Set objWMI = GetObject("winmgmts:\\.\root\cimv2")
+
+' Wait for OpenRGB server (max 60 sec)
+retries = 0
+Do While retries < 30
+    Set colProcesses = objWMI.ExecQuery("SELECT * FROM Win32_Process WHERE Name = 'OpenRGB.exe'")
+    If colProcesses.Count > 0 Then Exit Do
+    WScript.Sleep 2000
+    retries = retries + 1
+Loop
+
+If retries >= 30 Then WScript.Quit
+
+' Get current hour
+currentHour = Hour(Now)
+
+' Determine profile based on hour
+Select Case True
+
+"@
+
+    # Generate Case conditions
+    for ($i = 0; $i -lt $count; $i++) {
+        $item = $Items[$i]
+        $prof = $item.profile
+
+        $start = [int](($StartHour + $duration * $i) % 24)
+        $end = [int](($StartHour + $duration * ($i + 1)) % 24)
+
+        if ($start -eq 0) {
+            # Starts at midnight (e.g., 0-3)
+            $vbsContent += "    Case currentHour < $end`r`n"
+        } elseif ($end -eq 0) {
+            # Ends at midnight (e.g., 21-0)
+            $vbsContent += "    Case currentHour >= $start`r`n"
+        } elseif ($end -lt $start) {
+            # Crosses midnight (e.g., 23-2)
+            $vbsContent += "    Case currentHour >= $start Or currentHour < $end`r`n"
+        } else {
+            # Normal range (e.g., 6-9)
+            $vbsContent += "    Case currentHour >= $start And currentHour < $end`r`n"
+        }
+        $vbsContent += "        profile = `"$prof`"`r`n"
+    }
+
+    $vbsContent += @"
+End Select
+
+' Run OpenRGB (hidden)
+WshShell.Run """$OpenRGBPath"" -p """ & profile & """", 0
+WScript.Quit
+"@
+
+    return $vbsContent
+}
 
 # Function to generate BAT content
 function New-TimeBatContent {
@@ -67,7 +139,15 @@ REM pause
     return $batContent
 }
 
-# Generate autoprofile.bat
+# Generate autoprofile.vbs (with retry logic for Task Scheduler)
+Write-Host "Generating autoprofile.vbs..." -ForegroundColor Yellow
+
+$autoprofileVbsPath = Join-Path $generatedPath "autoprofile.vbs"
+$autoprofileVbsContent = New-AutoprofileVbs -Items $config.schedules.items -StartHour $config.schedules.startHour -OpenRGBPath $openRGBPath
+$autoprofileVbsContent | Out-File -FilePath $autoprofileVbsPath -Encoding ASCII
+Write-Host "Created: generated/autoprofile.vbs" -ForegroundColor Green
+
+# Generate autoprofile.bat (kept for manual use)
 Write-Host "Generating autoprofile.bat..." -ForegroundColor Yellow
 
 $autoprofileContent = New-TimeBatContent -Items $config.schedules.items -StartHour $config.schedules.startHour -OpenRGBPath $openRGBPath

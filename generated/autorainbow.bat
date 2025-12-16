@@ -1,12 +1,12 @@
 @echo off
-REM Auto-generisan fajl - ne edituj rucno!
-REM Edituj config.json i pokreni setup.ps1
+REM Auto-generated file - do not edit manually!
+REM Edit config.json and run setup.ps1
 
 for /f "tokens=1 delims=:" %%a in ("%time%") do set hour=%%a
 if "%hour:~0,1%"==" " set hour=0%hour:~1,1%
 set /a hour=%hour%
 
-REM echo SAT JE: %hour%
+REM echo HOUR IS: %hour%
 REM pause
 
 if %hour% GEQ 3 if %hour% LSS 5 goto UC_01_00F

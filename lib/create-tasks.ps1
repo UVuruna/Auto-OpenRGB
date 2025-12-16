@@ -3,7 +3,8 @@
 # Autoprofile task (at log on + resume from sleep)
 Write-Host "Creating autoprofile task..." -ForegroundColor Yellow
 
-$autoprofileAction = New-ScheduledTaskAction -Execute "cmd.exe" -Argument "/c `"$autoprofilePath`""
+$autoprofileVbsPath = Join-Path $generatedPath "autoprofile.vbs"
+$autoprofileAction = New-ScheduledTaskAction -Execute "wscript.exe" -Argument "`"$autoprofileVbsPath`""
 
 # Trigger 1: At Log On
 $logonTrigger = New-ScheduledTaskTrigger -AtLogOn
