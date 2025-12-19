@@ -9,12 +9,12 @@ Creates Task Scheduler tasks for automatic RGB profile execution.
 ## Dependencies
 
 - `$config` must be loaded (init.ps1)
-- `$autoprofilePath`, `$openRGBPath` must be defined (init.ps1)
+- `$generatedPath`, `$openRGBPath` must be defined (init.ps1)
 - Must be run as Administrator
 
 ## What It Does
 
-1. **OpenRGB autoprofile task** - Trigger: At Log On
+1. **OpenRGB autoprofile task** - Triggers: At Log On + Resume from Sleep
 2. **Daily tasks** - For each schedule, trigger: Daily at auto-calculated time
 
 ## Time Auto-Calculation
@@ -37,8 +37,9 @@ Example for 8 profiles with startHour=5:
 
 | Setting | Value |
 |---------|-------|
-| Trigger | At Log On (current user) |
-| Action | `cmd.exe /c "generated\autoprofile.bat"` |
+| Trigger 1 | At Log On (current user) |
+| Trigger 2 | Resume from Sleep (Power-Troubleshooter Event ID 1) |
+| Action | `wscript.exe "generated\autoprofile.vbs"` |
 | Run Level | Highest (admin) |
 | Author | UV |
 
@@ -67,4 +68,4 @@ New-ScheduledTaskSettingsSet `
 
 - Task names must start with "OpenRGB" because `init.ps1` deletes all tasks starting with "OpenRGB*"
 - `-Force` flag overwrites existing tasks with same name
-- BAT file is now located in `generated/` folder
+- VBS script has retry logic to wait for OpenRGB server (max 60 sec)

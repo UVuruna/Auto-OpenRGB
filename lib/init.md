@@ -25,8 +25,6 @@ Environment initialization before generating files. First script that `setup.ps1
 $script:scriptDir        # Project root folder
 $script:configPath       # config.json path
 $script:generatedPath    # generated/ folder
-$script:autoprofilePath  # generated/autoprofile.bat path
-$script:autorainbowPath  # generated/autorainbow.bat path
 $script:cyclePath        # cycle/ folder
 $script:rainbowPath      # rainbow/ folder
 $script:config           # Loaded JSON

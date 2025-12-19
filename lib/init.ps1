@@ -11,8 +11,6 @@ if (-not $isAdmin) {
 $script:scriptDir = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
 $script:configPath = Join-Path $scriptDir "config.json"
 $script:generatedPath = Join-Path $scriptDir "generated"
-$script:autoprofilePath = Join-Path $generatedPath "autoprofile.bat"
-$script:autorainbowPath = Join-Path $generatedPath "autorainbow.bat"
 $script:cyclePath = Join-Path $scriptDir "cycle"
 $script:rainbowPath = Join-Path $scriptDir "rainbow"
 

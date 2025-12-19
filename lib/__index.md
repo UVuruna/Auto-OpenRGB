@@ -11,8 +11,8 @@ This folder contains modular PowerShell scripts that `setup.ps1` calls in sequen
 | File | Documentation | Description |
 |------|---------------|-------------|
 | init.ps1 | [init.md](init.md) | Initialization - config, folders, cleanup |
-| generate-bat.ps1 | [generate-bat.md](generate-bat.md) | Generates autoprofile.bat and autorainbow.bat |
-| generate-vbs.ps1 | [generate-vbs.md](generate-vbs.md) | Generates all VBS files |
+| generate-bat.ps1 | [generate-bat.md](generate-bat.md) | Generates autoprofile.vbs and autorainbow.vbs |
+| generate-vbs.ps1 | [generate-vbs.md](generate-vbs.md) | Generates cycle and rainbow VBS files |
 | create-tasks.ps1 | [create-tasks.md](create-tasks.md) | Creates Task Scheduler tasks |
 
 ## Execution Order
@@ -36,8 +36,6 @@ flowchart LR
 | `$config` | Loaded JSON config |
 | `$openRGBPath` | Path to OpenRGB.exe |
 | `$generatedPath` | Path to generated/ folder |
-| `$autoprofilePath` | Path to generated/autoprofile.bat |
-| `$autorainbowPath` | Path to generated/autorainbow.bat |
 | `$cyclePath` | Path to cycle/ folder |
 | `$rainbowPath` | Path to rainbow/ folder |
 

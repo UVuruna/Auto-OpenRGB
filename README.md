@@ -48,10 +48,10 @@ flowchart LR
   📝 setup.md                 ← Documentation for setup.ps1
   📝 README.md
   📝 CLAUDE.md
-  📁 generated/               ← Auto-generated BAT files
+  📁 generated/               ← Auto-generated VBS scripts
     📝 __index.md
-    🔧 autoprofile.bat
-    🔧 autorainbow.bat
+    🔧 autoprofile.vbs
+    🔧 autorainbow.vbs
   📁 lib/                     ← Helper scripts
     📝 __index.md
     🔧 init.ps1
@@ -91,8 +91,8 @@ Set-ExecutionPolicy Bypass -Scope Process
 | Output | Location |
 |--------|----------|
 | Task Scheduler tasks | Windows Task Scheduler |
-| autoprofile.bat | `generated/` folder |
-| autorainbow.bat | `generated/` folder |
+| autoprofile.vbs | `generated/` folder |
+| autorainbow.vbs | `generated/` folder |
 | Cycle VBS files | `cycle/` folder |
 | Rainbow VBS files | `rainbow/` folder |
 | OpenRGB-Server.vbs | Windows Startup folder |
@@ -177,12 +177,9 @@ OpenRGB server is not running.
 
 ### Autoprofile shows wrong color
 
-Uncomment debug lines in `generated/autoprofile.bat`:
+Run `generated/autoprofile.vbs` manually by double-clicking. The script uses `Hour(Now)` which is reliable across all Windows locales.
 
-```bat
-echo HOUR IS: %hour%
-pause
-```
+If still wrong, check your system clock settings.
 
 ### Server doesn't start on boot
 
@@ -208,7 +205,7 @@ pause
 
 | Folder | Documentation | Description |
 |--------|---------------|-------------|
-| `generated/` | [generated/__index.md](generated/__index.md) | Auto-generated BAT files |
+| `generated/` | [generated/__index.md](generated/__index.md) | Auto-generated VBS scripts |
 | `lib/` | [lib/__index.md](lib/__index.md) | Helper scripts for setup.ps1 |
 | `cycle/` | [cycle/__index.md](cycle/__index.md) | VBS for daily profiles |
 | `rainbow/` | [rainbow/__index.md](rainbow/__index.md) | VBS for rainbow profiles |
@@ -220,8 +217,8 @@ Detailed documentation for each script is in the `lib/` folder:
 | Script | Documentation | Description |
 |--------|---------------|-------------|
 | init.ps1 | [init.md](lib/init.md) | Initialization, config, cleanup |
-| generate-bat.ps1 | [generate-bat.md](lib/generate-bat.md) | BAT file generation |
-| generate-vbs.ps1 | [generate-vbs.md](lib/generate-vbs.md) | VBS file generation |
+| generate-bat.ps1 | [generate-bat.md](lib/generate-bat.md) | VBS script generation (autoprofile, autorainbow) |
+| generate-vbs.ps1 | [generate-vbs.md](lib/generate-vbs.md) | VBS file generation (cycle, rainbow) |
 | create-tasks.ps1 | [create-tasks.md](lib/create-tasks.md) | Task Scheduler task creation |
 
 ---

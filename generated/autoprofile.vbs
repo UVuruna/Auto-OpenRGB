@@ -14,7 +14,6 @@ Do While retries < 30
 Loop
 
 If retries >= 30 Then WScript.Quit
-
 ' Get current hour
 currentHour = Hour(Now)
 
