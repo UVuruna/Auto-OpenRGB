@@ -44,7 +44,7 @@ for ($i = 0; $i -lt $count; $i++) {
 
     $action = New-ScheduledTaskAction -Execute $openRGBPath -Argument "-p `"$prof`""
     $trigger = New-ScheduledTaskTrigger -Daily -At $time
-    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 5)
+    $settings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -ExecutionTimeLimit (New-TimeSpan -Minutes 5)
     $principal = New-ScheduledTaskPrincipal -UserId $env:USERNAME -RunLevel Highest
 
     $task = New-ScheduledTask -Action $action -Trigger $trigger -Settings $settings -Principal $principal

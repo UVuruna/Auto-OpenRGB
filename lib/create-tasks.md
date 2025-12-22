@@ -54,15 +54,26 @@ Example for 8 profiles with startHour=5:
 
 ## Task Settings
 
-All tasks have the same settings:
+### Autoprofile task
 
 ```powershell
 New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries `      # Works on battery
     -DontStopIfGoingOnBatteries `   # Doesn't stop when switching to battery
-    -StartWhenAvailable `           # Runs missed tasks
+    -StartWhenAvailable `           # Runs after sleep/missed trigger
     -ExecutionTimeLimit (New-TimeSpan -Minutes 5)  # Max 5 min
 ```
+
+### Daily tasks
+
+```powershell
+New-ScheduledTaskSettingsSet `
+    -AllowStartIfOnBatteries `      # Works on battery
+    -DontStopIfGoingOnBatteries `   # Doesn't stop when switching to battery
+    -ExecutionTimeLimit (New-TimeSpan -Minutes 5)  # Max 5 min
+```
+
+Note: Daily tasks do NOT have `-StartWhenAvailable` to prevent all tasks from running at once when setup.ps1 is executed.
 
 ## Notes
 
