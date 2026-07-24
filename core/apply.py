@@ -63,6 +63,13 @@ def selected_devices(client: OpenRGBClient, settings: Settings) -> list:
     return chosen
 
 
+def is_razer_keyboard(device) -> bool:
+    """The one rule for "this is a Razer keyboard" — the hardware behind both
+    Hypershift shortcut sets and the Chroma module. Kept here so the GUI and
+    the daemon never re-invent it."""
+    return device.type.name == "KEYBOARD" and "razer" in device.name.lower()
+
+
 def detect_hypershift_keyboard(settings: Settings) -> bool:
     """True when a Hypershift-capable keyboard (Razer) is present.
     Quick single-attempt probe; False when the server is unreachable."""
@@ -74,8 +81,7 @@ def detect_hypershift_keyboard(settings: Settings) -> bool:
     except ConnectionError:
         return False
     try:
-        return any(d.type.name == "KEYBOARD" and "razer" in d.name.lower()
-                   for d in client.devices)
+        return any(is_razer_keyboard(d) for d in client.devices)
     finally:
         client.disconnect()
 

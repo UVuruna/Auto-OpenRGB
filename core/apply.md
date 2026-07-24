@@ -53,6 +53,15 @@ ON timeout -> WARN, apply to what is present, remember the lower n
 - The learned count lives in `logs/devices.json`, owned solely by this module
   (separate from the resolver's `state.json`).
 
+## Razer keyboard detection
+
+`is_razer_keyboard(device)` is the ONE rule for "this is a Razer keyboard"
+(type `KEYBOARD` + `razer` in the name). Both Razer-only features read it, so
+the rule is never re-invented: the Shortcuts tab offers the Hypershift
+selector, and the Devices tab shows the Chroma section, only when it matches.
+`detect_hypershift_keyboard(settings)` is the standalone single-attempt probe
+built on it (False when the server is unreachable).
+
 ## Connections
 
 ### Uses

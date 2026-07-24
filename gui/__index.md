@@ -52,10 +52,13 @@ city fills lat/lon/timezone automatically (timezone is never typed).
 
 ### `devices_tab.py` — Devices Tab
 Live device list from the OpenRGB SDK with check boxes (unchecked =
-excluded), plus the optional Razer Chroma module toggles. The SDK query
-runs on a BACKGROUND thread and reports back through a Qt signal, so the
-window never blocks on OpenRGB; a failed probe keeps the last known list on
-screen instead of blanking the page.
+excluded). The SDK query runs on a BACKGROUND thread and reports back
+through a Qt signal, so the window never blocks on OpenRGB; a failed probe
+keeps the last known list on screen instead of blanking the page. The Razer
+Chroma section is Razer-only — it appears once a Razer keyboard shows up in
+the device list (or when the module is already enabled, so the setting is
+never unreachable); the "is this a Razer keyboard" rule lives once in
+[Apply](../core/apply.md).
 
 ### `shortcuts_tab.py` — Shortcuts Tab
 The owner's flow: named set → selector (hypershift offered only when a

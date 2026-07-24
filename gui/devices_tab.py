@@ -25,9 +25,10 @@ from gui import theme
 
 
 class DevicesTab(QWidget):
-    # (device names, error text). Emitted from the loader thread; Qt delivers
-    # it on the GUI thread, which is the only place widgets are touched.
-    _loaded = Signal(list, str)
+    # (device names, Razer keyboard present, error text). Emitted from the
+    # loader thread; Qt delivers it on the GUI thread, which is the only place
+    # widgets are touched.
+    _loaded = Signal(list, bool, str)
 
     def __init__(self, raw: dict):
         super().__init__()
@@ -61,6 +62,18 @@ class DevicesTab(QWidget):
         self.chroma_follow.toggled.connect(
             lambda on: self.raw["chroma"].__setitem__("followSchedule", on))
 
+        # The whole Chroma section is Razer-only: it appears once a Razer
+        # keyboard actually shows up in the device list. An already-enabled
+        # module stays visible regardless, so the setting is never unreachable.
+        self.chroma_box = QWidget()
+        chroma_layout = QVBoxLayout(self.chroma_box)
+        chroma_layout.setContentsMargins(0, theme.SPACE_S, 0, 0)
+        chroma_layout.setSpacing(theme.SPACE_S)
+        chroma_layout.addWidget(QLabel("Razer Chroma module"))
+        chroma_layout.addWidget(self.chroma_enabled)
+        chroma_layout.addWidget(self.chroma_follow)
+        self.chroma_box.setVisible(bool(chroma_cfg.get("enabled", False)))
+
         layout = QVBoxLayout(self)
         layout.setContentsMargins(theme.SPACE_M, theme.SPACE_M, theme.SPACE_M, theme.SPACE_M)
         layout.setSpacing(theme.SPACE_S)
@@ -69,10 +82,7 @@ class DevicesTab(QWidget):
         layout.addWidget(self.refresh_btn)
         layout.addWidget(self.status)
         layout.addWidget(hint)
-        layout.addSpacing(theme.SPACE_S)
-        layout.addWidget(QLabel("Razer Chroma module"))
-        layout.addWidget(self.chroma_enabled)
-        layout.addWidget(self.chroma_follow)
+        layout.addWidget(self.chroma_box)
 
         self.reload()
 
@@ -106,22 +116,27 @@ class DevicesTab(QWidget):
             client = rgb.connect(probe)
             try:
                 names = [d.name for d in client.devices]
+                has_razer = any(rgb.is_razer_keyboard(d) for d in client.devices)
             finally:
                 client.disconnect()
-            self._loaded.emit(names, "")
+            self._loaded.emit(names, has_razer, "")
         except Exception as e:                      # noqa: BLE001 - reported in the UI
-            self._loaded.emit([], str(e))
+            self._loaded.emit([], False, str(e))
 
-    def _apply_loaded(self, names: list, error: str) -> None:
+    def _apply_loaded(self, names: list, has_razer: bool, error: str) -> None:
         self._loading = False
         self.refresh_btn.setEnabled(True)
         if error:
             # Keep the list that is already on screen — a failed probe must
             # never blank the page (documented fallback, Rule #1: it is shown).
+            # Chroma visibility is left as-is: a failed probe proves nothing
+            # about the hardware.
             self.status.setText(
                 f"OpenRGB server unreachable ({error}). Stored filter: "
                 f"{self.raw['devices']['mode']} {self.raw['devices']['names']}")
             return
+        self.chroma_box.setVisible(
+            has_razer or bool(self.raw.get("chroma", {}).get("enabled", False)))
         self.device_list.blockSignals(True)
         self.device_list.clear()
         for name in names:
