@@ -1,19 +1,55 @@
 """Colors tab — the DEFINED COLORS of the app (owner terminology).
 
+ONE name = ONE hex color. The palette lives in a single panel, split into
+hue groups (`color_groups.py`) stacked one below another; inside a group the
+names flow across as many columns — and down as many rows — as they need.
+The narrow side column shows the selected color's hex above its four actions
+(New color / Rename / Edit / Remove).
+
 A default palette ships with the config; the user can add fully custom
 colors. Presets (rules), shortcuts and Chroma all reference these by
 name. NOT presets — a preset is a rule and lives in the Presets tab.
 """
 
-from PySide6.QtCore import Signal
-from PySide6.QtGui import QColor
+from PySide6.QtCore import QSize, Qt, Signal
+from PySide6.QtGui import QColor, QPixmap
 from PySide6.QtWidgets import (
-    QColorDialog, QHBoxLayout, QInputDialog, QLabel, QListWidget,
-    QListWidgetItem, QMessageBox, QPushButton, QVBoxLayout, QWidget,
+    QColorDialog, QHBoxLayout, QInputDialog, QLabel, QListView, QListWidget,
+    QListWidgetItem, QMessageBox, QPushButton, QScrollArea, QVBoxLayout,
+    QWidget,
 )
 
-from gui import theme
+from gui import color_groups, theme
 from gui.widgets import ADD, EDIT, REMOVE, secondary
+
+NO_SELECTION = "—"
+
+
+class _ColorGrid(QListWidget):
+    """A group's color tiles: wraps into columns/rows and grows to fit them
+    all, so the surrounding scroll area does the scrolling, not each grid."""
+
+    def __init__(self):
+        super().__init__()
+        self.setFlow(QListView.Flow.LeftToRight)
+        self.setWrapping(True)
+        self.setResizeMode(QListView.ResizeMode.Adjust)
+        self.setGridSize(QSize(theme.COLOR_TILE_W, theme.COLOR_TILE_H))
+        self.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+
+    def fit_height(self) -> None:
+        """Height = exactly the rows the tiles need at the current width."""
+        width = max(self.viewport().width(), theme.COLOR_TILE_W)
+        per_row = max(1, width // theme.COLOR_TILE_W)
+        rows = max(1, (self.count() + per_row - 1) // per_row)
+        height = rows * theme.COLOR_TILE_H + theme.COLOR_GRID_PAD
+        if self.height() != height:
+            self.setFixedHeight(height)
+
+    def resizeEvent(self, event) -> None:
+        super().resizeEvent(event)
+        self.fit_height()
 
 
 class ColorsTab(QWidget):
@@ -22,52 +58,56 @@ class ColorsTab(QWidget):
     def __init__(self, raw: dict):
         super().__init__()
         self.raw = raw
+        self._selected: str | None = None
+        self._grids: list[_ColorGrid] = []
 
-        self.color_list = QListWidget()
-        self.color_list.currentItemChanged.connect(lambda *_: self._load_values())
+        # -- the one panel: hue groups stacked, each a wrapping tile grid ----
+        self._groups_box = QWidget()
+        self._groups_layout = QVBoxLayout(self._groups_box)
+        self._groups_layout.setContentsMargins(0, 0, 0, 0)
+        self._groups_layout.setSpacing(theme.SPACE_S)
 
-        add_btn = QPushButton(f"{ADD} New color")
-        add_btn.clicked.connect(self._add_color)
+        scroll = QScrollArea()
+        scroll.setWidgetResizable(True)
+        scroll.setWidget(self._groups_box)
+
+        # -- side column: the hex of the selected color, then its actions ----
+        self.preview_bar = QLabel()
+        self.preview_bar.setFixedSize(theme.COLOR_SIDE_W, theme.COLOR_PREVIEW_H)
+        self.preview_hex = QLabel(NO_SELECTION)
+        self.preview_hex.setProperty("hexvalue", True)
+        self.preview_hex.setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        new_btn = QPushButton(f"{ADD} New color")
+        new_btn.clicked.connect(self._add_color)
         rename_btn = secondary(QPushButton("✏️ Rename"))
         rename_btn.clicked.connect(self._rename_color)
+        edit_btn = secondary(QPushButton(f"{EDIT} Edit"))
+        edit_btn.clicked.connect(self._edit_color)
         remove_btn = secondary(QPushButton(f"{REMOVE} Remove"))
         remove_btn.clicked.connect(self._remove_color)
 
-        left = QVBoxLayout()
-        left.addWidget(QLabel("Defined colors"))
-        left.addWidget(self.color_list, 1)
-        row = QHBoxLayout()
-        for b in (add_btn, rename_btn, remove_btn):
-            row.addWidget(b)
-        left.addLayout(row)
+        side = QVBoxLayout()
+        side.setSpacing(theme.SPACE_S)
+        side.addWidget(QLabel("Selected color"))
+        side.addWidget(self.preview_bar)
+        side.addWidget(self.preview_hex)
+        side.addSpacing(theme.SPACE_S)
+        for button in (new_btn, rename_btn, edit_btn, remove_btn):
+            button.setFixedWidth(theme.COLOR_SIDE_W)
+            side.addWidget(button)
+        side.addStretch(1)
 
-        self.value_list = QListWidget()
-        self.value_list.itemDoubleClicked.connect(lambda *_: self._edit_value())
-        add_value = secondary(QPushButton(f"{ADD} Add hex"))
-        add_value.clicked.connect(self._add_value)
-        edit_value = secondary(QPushButton(f"{EDIT} Edit"))
-        edit_value.clicked.connect(self._edit_value)
-        del_value = secondary(QPushButton(f"{REMOVE} Remove"))
-        del_value.clicked.connect(self._remove_value)
-
-        hint = QLabel("One hex value paints every selected device.\n"
-                      "Several values are distributed round-robin across devices.")
-        hint.setProperty("hint", True)
-
-        right = QVBoxLayout()
-        right.addWidget(QLabel("Hex values of the selected color"))
-        right.addWidget(self.value_list, 1)
-        crow = QHBoxLayout()
-        for b in (add_value, edit_value, del_value):
-            crow.addWidget(b)
-        right.addLayout(crow)
-        right.addWidget(hint)
+        panel = QVBoxLayout()
+        panel.addWidget(QLabel("Defined colors"))
+        panel.addWidget(scroll, 1)
 
         layout = QHBoxLayout(self)
-        layout.setContentsMargins(theme.SPACE_M, theme.SPACE_M, theme.SPACE_M, theme.SPACE_M)
+        layout.setContentsMargins(theme.SPACE_M, theme.SPACE_M,
+                                  theme.SPACE_M, theme.SPACE_M)
         layout.setSpacing(theme.SPACE_M)
-        layout.addLayout(left, 1)
-        layout.addLayout(right, 1)
+        layout.addLayout(panel, 1)
+        layout.addLayout(side)
 
         self.reload()
 
@@ -77,26 +117,82 @@ class ColorsTab(QWidget):
         return self.raw["colors"]
 
     def _current_name(self) -> str | None:
-        item = self.color_list.currentItem()
-        return item.text() if item else None
+        if self._selected in self._colors():
+            return self._selected
+        return None
+
+    def _value(self, name: str) -> str:
+        """The color's single hex. Configs store a list (the engine can
+        round-robin several values across devices); one name = one color
+        here, so the GUI reads and writes the first entry."""
+        return self._colors()[name][0]
+
+    def _set_value(self, name: str, hex_value: str) -> None:
+        self._colors()[name] = [hex_value]
+
+    # -- building the grouped palette --------------------------------------
 
     def reload(self) -> None:
-        self.color_list.clear()
-        for name, values in self._colors().items():
-            self.color_list.addItem(
-                QListWidgetItem(theme.swatch_icon(values[0]), name))
-        if self.color_list.count():
-            self.color_list.setCurrentRow(0)
-        self._load_values()
+        while self._groups_layout.count():
+            item = self._groups_layout.takeAt(0)
+            if item.widget() is not None:
+                item.widget().deleteLater()
+        self._grids = []
 
-    def _load_values(self) -> None:
-        self.value_list.clear()
+        for group, names in color_groups.grouped(self._colors()):
+            header = QLabel(group.upper())
+            header.setProperty("grouphdr", True)
+            self._groups_layout.addWidget(header)
+
+            grid = _ColorGrid()
+            for name in names:
+                grid.addItem(
+                    QListWidgetItem(theme.swatch_icon(self._value(name)), name))
+            grid.itemSelectionChanged.connect(
+                lambda g=grid: self._grid_selected(g))
+            grid.itemDoubleClicked.connect(lambda *_: self._edit_color())
+            grid.fit_height()
+            self._groups_layout.addWidget(grid)
+            self._grids.append(grid)
+
+        self._groups_layout.addStretch(1)
+        self._select(self._selected)
+
+    def _grid_selected(self, grid: _ColorGrid) -> None:
+        items = grid.selectedItems()
+        if not items:
+            return
+        for other in self._grids:
+            if other is not grid:
+                other.clearSelection()
+        self._selected = items[0].text()
+        self._load_selected()
+
+    def _select(self, name: str | None) -> None:
+        """Select `name` wherever it now lives, else the first color."""
+        target = name if name in self._colors() else None
+        for grid in self._grids:
+            for row in range(grid.count()):
+                item = grid.item(row)
+                if target is None:
+                    grid.setCurrentItem(item)   # first color of the first grid
+                    return
+                if item.text() == target:
+                    grid.setCurrentItem(item)
+                    return
+        self._selected = None
+        self._load_selected()
+
+    def _load_selected(self) -> None:
         name = self._current_name()
         if name is None:
+            self.preview_bar.setPixmap(QPixmap())
+            self.preview_hex.setText(NO_SELECTION)
             return
-        for value in self._colors()[name]:
-            self.value_list.addItem(
-                QListWidgetItem(theme.swatch_icon(value), f"#{value.upper()}"))
+        value = self._value(name)
+        self.preview_bar.setPixmap(
+            theme.swatch_bar(value, theme.COLOR_SIDE_W, theme.COLOR_PREVIEW_H))
+        self.preview_hex.setText(f"#{value.upper()}")
 
     # -- color actions -----------------------------------------------------
 
@@ -108,12 +204,12 @@ class ColorsTab(QWidget):
         if name in self._colors():
             QMessageBox.warning(self, "Ultra Vivid", f"Color {name!r} already exists.")
             return
-        picked = QColorDialog.getColor(QColor("#8B5CF6"), self, f"Value for {name}")
+        picked = QColorDialog.getColor(QColor(theme.ACCENT), self, f"Value for {name}")
         if not picked.isValid():
             return
-        self._colors()[name] = [picked.name()[1:].upper()]
+        self._set_value(name, picked.name()[1:].upper())
+        self._selected = name
         self.reload()
-        self.color_list.setCurrentRow(self.color_list.count() - 1)
         self.colors_changed.emit()
 
     def _rename_color(self) -> None:
@@ -130,6 +226,21 @@ class ColorsTab(QWidget):
         colors = self._colors()
         colors[new] = colors.pop(old)
         self._rename_references(old, new)
+        self._selected = new
+        self.reload()
+        self.colors_changed.emit()
+
+    def _edit_color(self) -> None:
+        """Pick a new hex for the selected color (it may change group)."""
+        name = self._current_name()
+        if name is None:
+            return
+        picked = QColorDialog.getColor(
+            QColor(f"#{self._value(name)}"), self, f"Value for {name}")
+        if not picked.isValid():
+            return
+        self._set_value(name, picked.name()[1:].upper())
+        self._selected = name
         self.reload()
         self.colors_changed.emit()
 
@@ -145,6 +256,7 @@ class ColorsTab(QWidget):
                 "Re-map those first.")
             return
         del self._colors()[name]
+        self._selected = None
         self.reload()
         self.colors_changed.emit()
 
@@ -188,39 +300,3 @@ class ColorsTab(QWidget):
             for binding in st.get("bindings", {}).values():
                 if binding.get("color") == old:
                     binding["color"] = new
-
-    # -- hex value actions -------------------------------------------------
-
-    def _add_value(self) -> None:
-        name = self._current_name()
-        if name is None:
-            return
-        picked = QColorDialog.getColor(QColor("#FFFFFF"), self, f"Add value to {name}")
-        if picked.isValid():
-            self._colors()[name].append(picked.name()[1:].upper())
-            self._load_values()
-            self.colors_changed.emit()
-
-    def _edit_value(self) -> None:
-        name = self._current_name()
-        row = self.value_list.currentRow()
-        if name is None or row < 0:
-            return
-        current = self._colors()[name][row]
-        picked = QColorDialog.getColor(QColor(f"#{current}"), self, "Edit value")
-        if picked.isValid():
-            self._colors()[name][row] = picked.name()[1:].upper()
-            self.reload()
-            self.colors_changed.emit()
-
-    def _remove_value(self) -> None:
-        name = self._current_name()
-        row = self.value_list.currentRow()
-        if name is None or row < 0:
-            return
-        if len(self._colors()[name]) == 1:
-            QMessageBox.warning(self, "Ultra Vivid", "A color needs at least one hex value.")
-            return
-        del self._colors()[name][row]
-        self._load_values()
-        self.colors_changed.emit()

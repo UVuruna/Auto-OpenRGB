@@ -14,7 +14,6 @@ Also removes two conflict sources that leave the RAM uncontrollable at boot:
     the RAM but never write to it (everything colors except the RAM);
   - the old non-elevated Startup VBS — a non-elevated instance cannot own the
     SMBus, and two instances fight over it.
-...plus the legacy nine "OpenRGB *" tasks.
 
 The registration itself is PowerShell (New-ScheduledTask*, the CIM event
 trigger for resume-from-sleep) run elevated once — the proven approach.
@@ -32,9 +31,6 @@ from core import paths
 RESOLVER_TASK = "Ultra Vivid resolver"
 DAEMON_TASK = "Ultra Vivid daemon"
 OPENRGB_TASK = "OpenRGB server"
-LEGACY_TASKS = ["OpenRGB autoprofile", "OpenRGB zora", "OpenRGB jutro",
-                "OpenRGB podne", "OpenRGB popodne", "OpenRGB vece",
-                "OpenRGB sumrak", "OpenRGB ponoc", "OpenRGB noc"]
 
 
 def _action(*args: str) -> tuple[str, str]:
@@ -71,7 +67,6 @@ def _build_script() -> str:
     resolver_exe, resolver_args = _action("--tick")
     daemon_exe, daemon_args = _action("--daemon")
     openrgb = _openrgb_path()
-    legacy_list = ", ".join(f'"{name}"' for name in LEGACY_TASKS)
 
     return f"""
 $ErrorActionPreference = "Stop"
@@ -122,11 +117,6 @@ $dTask = New-ScheduledTask -Action $daemonAction -Trigger $dLogon -Settings $dSe
 $dTask.Author = "UV"
 Register-ScheduledTask -TaskName "{DAEMON_TASK}" -InputObject $dTask -Force | Out-Null
 Write-Host "Registered: {DAEMON_TASK}"
-
-foreach ($name in @({legacy_list})) {{
-    $t = Get-ScheduledTask -TaskName $name -ErrorAction SilentlyContinue
-    if ($t) {{ Unregister-ScheduledTask -TaskName $name -Confirm:$false -ErrorAction SilentlyContinue; Write-Host "Removed legacy: $name" }}
-}}
 
 # Ensure exactly ONE (elevated) OpenRGB instance right now — kill any current
 # one (the removed service / old VBS may have started it), then start the task.

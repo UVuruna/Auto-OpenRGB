@@ -28,8 +28,17 @@ first — an invalid edit never reaches the file (Rule #1).
 
 ### `colors_tab.py` — Colors Tab
 The DEFINED COLORS (owner terminology): default palette + fully custom
-colors. Rename cascades into every reference; deletion is blocked while
-a color is in use.
+colors. **One name = one hex.** A single panel stacks the hue GROUPS one
+below another; inside a group the names wrap across as many columns and
+rows as they need. The narrow side column shows the selected color's hex
+above its four actions (New color / Rename / Edit / Remove). Rename
+cascades into every reference; deletion is blocked while a color is in use.
+
+### `color_groups.py` — Color Grouping
+Pure logic (no Qt): puts a hex color in one of nine groups — Red, Green,
+Blue, Cyan, Magenta, Yellow, Orange, Azure, Gray. Near-zero saturation is
+Gray; everything else goes to the nearest hue centre by circular distance,
+brightness ignored (dark red and light red share a channel).
 
 ### `presets_tab.py` — Presets Tab
 A PRESET is a RULE: a trigger grouping (hours / weekdays / monthdays /

@@ -38,6 +38,13 @@ SPACE_L = 24
 
 SWATCH_SIZE = 18             # px, preset color chips in combos/lists
 
+# Colors tab: one multi-column grid of names + a narrow action side column.
+COLOR_TILE_W = 200           # grid tile width (columns wrap to fit the panel)
+COLOR_TILE_H = 34            # grid tile height
+COLOR_SIDE_W = 190           # side column width (preview + the four actions)
+COLOR_PREVIEW_H = 56         # selected-color preview bar height
+COLOR_GRID_PAD = 10          # frame padding added to a group grid's fitted height
+
 FONT_STACK = '"Inter", "Segoe UI Variable", "Segoe UI"'
 
 
@@ -52,6 +59,23 @@ def app_qss() -> str:
     }}
     QLabel {{ background: transparent; }}
     QLabel[hint="true"] {{ color: {TEXT_SECONDARY}; font-size: 12px; }}
+    QLabel[grouphdr="true"] {{
+        color: {TEXT_SECONDARY};
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        padding: 2px;
+    }}
+    QLabel[hexvalue="true"] {{
+        font-family: "Cascadia Mono", "Consolas", monospace;
+        font-size: 15px;
+        font-weight: 700;
+        letter-spacing: 1px;
+        background: {SURFACE_2};
+        border: 1px solid {BORDER};
+        border-radius: {RADIUS_CONTROL}px;
+        padding: 6px;
+    }}
 
     QTabWidget::pane {{
         border: 1px solid {BORDER};
@@ -158,6 +182,20 @@ def app_qss() -> str:
     }}
     QScrollBar::add-line, QScrollBar::sub-line {{ height: 0; }}
     """
+
+
+def swatch_bar(hex_color: str, width: int, height: int) -> QPixmap:
+    """Wide rounded color bar — the selected-color preview in the Colors tab."""
+    pixmap = QPixmap(width, height)
+    pixmap.fill(Qt.GlobalColor.transparent)
+    painter = QPainter(pixmap)
+    painter.setRenderHint(QPainter.RenderHint.Antialiasing)
+    painter.setBrush(QColor(f"#{hex_color}"))
+    painter.setPen(QColor(255, 255, 255, 40))
+    painter.drawRoundedRect(0, 0, width - 1, height - 1,
+                            RADIUS_CONTROL, RADIUS_CONTROL)
+    painter.end()
+    return pixmap
 
 
 def swatch_icon(hex_color: str, size: int = SWATCH_SIZE) -> QIcon:

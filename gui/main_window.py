@@ -2,7 +2,8 @@
 
 The tabs edit the raw config dict in place; Save validates and writes
 (an invalid edit never reaches disk), Apply runs the resolver detached.
-Opens portrait (W:H = 1:2, clamped to the screen) with a minimum width.
+Opens portrait (W:H = 1:2, clamped to the screen); the minimum size is the
+point where content would clip, so small screens can shrink it further.
 """
 
 import os
@@ -34,8 +35,12 @@ from gui.shortcuts_tab import ShortcutsTab
 
 ICO_PATH = paths.ASSETS_DIR / "UltraVivid.ico"
 STATUS_REFRESH_MS = 30_000
-MIN_WIDTH = 900               # owner spec: the shown width is the minimum
-MIN_HEIGHT = 700
+# The window OPENS comfortably wide but may be dragged much narrower — the
+# minimum is the point where content would actually start to clip, not the
+# opening size (a 900px floor was unusable on 1366x768 / 720p screens).
+OPEN_WIDTH = 900
+MIN_WIDTH = 720
+MIN_HEIGHT = 540              # fits a 720p screen with its taskbar
 HEIGHT_SCREEN_FRACTION = 2    # owner spec: window height = screen height / 2
 
 
@@ -118,13 +123,17 @@ class MainWindow(QMainWindow):
 
     def _size_to_portrait(self) -> None:
         """Owner spec: NEVER full height — the window opens at HALF the
-        screen height (1:2 of the screen), min width 900."""
+        screen height (1:2 of the screen) and at OPEN_WIDTH, clamped to what
+        the screen actually offers. The user may then drag it down to
+        MIN_WIDTH/MIN_HEIGHT."""
         screen = QGuiApplication.primaryScreen()
-        height = MIN_HEIGHT
+        width, height = OPEN_WIDTH, MIN_HEIGHT
         if screen is not None:
+            available = screen.availableGeometry()
+            width = min(OPEN_WIDTH, available.width())
             height = max(MIN_HEIGHT,
-                         screen.availableGeometry().height() // HEIGHT_SCREEN_FRACTION)
-        self.resize(MIN_WIDTH, height)
+                         available.height() // HEIGHT_SCREEN_FRACTION)
+        self.resize(width, height)
 
     # -- status ------------------------------------------------------------
 

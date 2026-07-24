@@ -24,7 +24,6 @@ RAM but not write to it, and TWO instances fight over the bus — the exact
   our server's RAM writes (this is a *service*, so earlier legacy-*task*
   cleanups never caught it);
 - **deletes the old non-elevated `OpenRGB-Server.vbs`** from Startup;
-- removes the legacy nine `OpenRGB *` tasks;
 - ensures exactly one live instance (kills any OpenRGB, then starts the task).
 
 Registration runs elevated once (UAC). Only the OpenRGB server needs
