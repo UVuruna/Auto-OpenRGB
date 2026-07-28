@@ -1,6 +1,6 @@
 """Shortcuts tab — the owner's flow, exactly:
 
-1. ADD a named set (e.g. "DUGA")
+1. ADD a named set (e.g. "Rainbow")
 2. pick the selector (shift / ctrl / alt / combos / Razer Hypershift —
    hypershift is offered only when a capable keyboard was detected)
 3. pick ANY keys (letters, number row, numpad, F-keys — free mix)
@@ -187,7 +187,7 @@ class ShortcutsTab(QWidget):
 
     def _add_set(self) -> None:
         name, ok = QInputDialog.getText(self, "New shortcut set",
-                                        "Set name (e.g. DUGA):")
+                                        "Set name (e.g. Rainbow):")
         name = name.strip()
         if not ok or not name:
             return

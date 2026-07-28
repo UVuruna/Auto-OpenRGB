@@ -1,7 +1,7 @@
 # shortcuts/
 
 One folder per shortcut SET, named after the set (e.g. `Rainbow/`,
-`DUGA/`), each holding one VBS per key the user picked:
+`Work/`), each holding one VBS per key the user picked:
 
 ```
 📁 shortcuts/

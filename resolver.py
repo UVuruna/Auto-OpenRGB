@@ -73,7 +73,7 @@ def _write_state(color: str | None) -> None:
 
 
 def _shortcut_binding(cfg, spec: str) -> dict | None:
-    """Resolve 'SetName:key' (e.g. 'DUGA:q') to its binding —
+    """Resolve 'SetName:key' (e.g. 'Rainbow:q') to its binding —
     {"color": name} or {"preset": name}.
 
     Returns None when the set or key no longer exists — a stale slot
