@@ -3,7 +3,7 @@
 **Script:** [Tasks (script)](tasks.py)
 
 ## Purpose
-Register the three Ultra Vivid scheduled tasks, from the repo OR the frozen
+Register the four Ultra Vivid scheduled tasks, from the repo OR the frozen
 exe — the task actions point at whatever is running (`python resolver.py`
 in the repo, `UltraVivid.exe --tick` when packaged), so the same code
 sets up both.
@@ -11,8 +11,21 @@ sets up both.
 | Task | Trigger | Level | Action |
 |------|---------|-------|--------|
 | `OpenRGB server` | log on | **Highest (elevated)** | `OpenRGB.exe --server --startminimized` |
-| `Ultra Vivid resolver` | log on + resume-from-sleep + every 10 min | normal | resolver tick |
+| `Ultra Vivid resolver` | every 10 min | normal | resolver tick (cache-respecting) |
+| `Ultra Vivid wake` | log on + resume-from-sleep | normal | resolver **`--force`** |
 | `Ultra Vivid daemon` | log on (resident) | normal | hotkeys + optional Chroma |
+
+**Why waking is a separate task (root cause of "no color after sleep",
+fixed 2026-07-28):** a task has ONE action for all of its triggers. The resume
+and log-on triggers used to sit on the resolver task, so waking ran the normal
+tick — and the tick applies only when the schedule decision *changed*. After a
+resume it is the same hour, same color, so the tick logged `Unchanged since
+last tick — skipping apply` and wrote nothing, while the RGB RAM had come back
+from sleep running its ONBOARD rainbow. A keyboard shortcut fixed it because a
+shortcut always applies. Wake events therefore get their own task whose action
+is `--force`: **after a power event the hardware state is unknown, so the
+cache must not be trusted.** The 10-min tick keeps the cache — that is what
+stops it from rewriting the devices 144 times a day.
 
 **Why OpenRGB runs as an elevated task (not the old Startup VBS):** the RAM
 SMBus needs administrator rights. A non-elevated instance can enumerate the

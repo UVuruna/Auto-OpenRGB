@@ -1,12 +1,23 @@
 """Register the Ultra Vivid scheduled tasks — from the repo OR the exe.
 
-Three tasks (all point at whatever is running us):
+Four tasks (all point at whatever is running us):
   - "OpenRGB server"        log on, ELEVATED (--server --startminimized).
                             Elevation is REQUIRED for the RAM SMBus, and this
                             single instance exposes the SDK the resolver/daemon
                             talk to.
-  - "Ultra Vivid resolver"  log on + resume + 10-min tick
+  - "Ultra Vivid resolver"  10-min tick, cache-respecting (a tick whose
+                            decision did not change applies nothing)
+  - "Ultra Vivid wake"      log on + resume-from-sleep, resolver --force
   - "Ultra Vivid daemon"    log on, resident (hotkeys + optional Chroma)
+
+WHY the wake path is a SEPARATE task: a Task Scheduler task has ONE action for
+all its triggers, so a wake trigger on the resolver task ran the same
+cache-respecting tick — and the cache said "same color as before sleep, nothing
+to do". But sleep/power-off RESETS the hardware: the RGB RAM comes back running
+its onboard rainbow while our state file still claims the scheduled color. The
+result was exactly the reported bug — color restored after a shortcut or a
+power-on, never after a resume. Waking is therefore its own task whose action
+FORCES the apply, because after a power event the hardware state is unknown.
 
 Also removes two conflict sources that leave the RAM uncontrollable at boot:
   - an auto-start "OpenRGB" *service* — a SECOND, non-server instance that
@@ -29,6 +40,7 @@ from pathlib import Path
 from core import paths
 
 RESOLVER_TASK = "Ultra Vivid resolver"
+WAKE_TASK = "Ultra Vivid wake"
 DAEMON_TASK = "Ultra Vivid daemon"
 OPENRGB_TASK = "OpenRGB server"
 
@@ -65,6 +77,7 @@ def _remove_startup_vbs() -> None:
 
 def _build_script() -> str:
     resolver_exe, resolver_args = _action("--tick")
+    wake_exe, wake_args = _action("--force")
     daemon_exe, daemon_args = _action("--daemon")
     openrgb = _openrgb_path()
 
@@ -92,7 +105,20 @@ $oTask.Author = "UV"
 Register-ScheduledTask -TaskName "{OPENRGB_TASK}" -InputObject $oTask -Force | Out-Null
 Write-Host "Registered: {OPENRGB_TASK} (elevated)"
 
+# Scheduled tick — cache-respecting: applies only when the decision changed.
 $resolverAction = New-ScheduledTaskAction -Execute '{resolver_exe}' -Argument '{resolver_args}'
+$tick = New-ScheduledTaskTrigger -Once -At ([datetime]::Today) -RepetitionInterval (New-TimeSpan -Minutes 10) -RepetitionDuration (New-TimeSpan -Days 3650)
+
+$rSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 5)
+$rTask = New-ScheduledTask -Action $resolverAction -Trigger $tick -Settings $rSettings
+$rTask.Author = "UV"
+Register-ScheduledTask -TaskName "{RESOLVER_TASK}" -InputObject $rTask -Force | Out-Null
+Write-Host "Registered: {RESOLVER_TASK}"
+
+# Wake — log on + resume-from-sleep, run with --force: a power event resets the
+# hardware (RGB RAM returns to its onboard effect), so the "unchanged decision"
+# cache must NOT be trusted here.
+$wakeAction = New-ScheduledTaskAction -Execute '{wake_exe}' -Argument '{wake_args}'
 $logon = New-ScheduledTaskTrigger -AtLogOn
 $logon.UserId = "$env:USERDOMAIN\\$env:USERNAME"
 
@@ -101,13 +127,10 @@ $resume = New-CimInstance -CimClass $eventClass -ClientOnly
 $resume.Subscription = '<QueryList><Query Id="0" Path="System"><Select Path="System">*[System[Provider[@Name=''Microsoft-Windows-Power-Troubleshooter''] and EventID=1]]</Select></Query></QueryList>'
 $resume.Enabled = $true
 
-$tick = New-ScheduledTaskTrigger -Once -At ([datetime]::Today) -RepetitionInterval (New-TimeSpan -Minutes 10) -RepetitionDuration (New-TimeSpan -Days 3650)
-
-$rSettings = New-ScheduledTaskSettingsSet -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -ExecutionTimeLimit (New-TimeSpan -Minutes 5)
-$rTask = New-ScheduledTask -Action $resolverAction -Trigger @($logon, $resume, $tick) -Settings $rSettings
-$rTask.Author = "UV"
-Register-ScheduledTask -TaskName "{RESOLVER_TASK}" -InputObject $rTask -Force | Out-Null
-Write-Host "Registered: {RESOLVER_TASK}"
+$wTask = New-ScheduledTask -Action $wakeAction -Trigger @($logon, $resume) -Settings $rSettings
+$wTask.Author = "UV"
+Register-ScheduledTask -TaskName "{WAKE_TASK}" -InputObject $wTask -Force | Out-Null
+Write-Host "Registered: {WAKE_TASK}"
 
 $daemonAction = New-ScheduledTaskAction -Execute '{daemon_exe}' -Argument '{daemon_args}'
 $dLogon = New-ScheduledTaskTrigger -AtLogOn

@@ -15,10 +15,12 @@ that first; only project facts and deltas live here.
   **Compute, don't generate (root Rule #19):** no `.orp` profiles, no
   per-combination scripts — `resolver.py` computes the color for any moment.
 - **Stack:** Python 3.13 (`openrgb-python` SDK client, `astral` solar math —
-  same library/convention as DOMY Watch), three Task Scheduler tasks
+  same library/convention as DOMY Watch), four Task Scheduler tasks
   (`OpenRGB server`: log on, **elevated** `--server` — RAM SMBus needs admin;
-  `Ultra Vivid resolver`: log on + resume + 10-min tick; `Ultra Vivid
-  daemon`: resident, hotkeys + Chroma), PySide6 GUI (`python -m gui.app`).
+  `Ultra Vivid resolver`: 10-min tick, cache-respecting; `Ultra Vivid wake`:
+  log on + resume, `--force` — a power event resets the hardware, so the
+  cache must not be trusted; `Ultra Vivid daemon`: resident, hotkeys +
+  Chroma), PySide6 GUI (`python -m gui.app`).
   `core/tasks.py` also removes a conflicting auto-start `OpenRGB` *service*
   that otherwise owns the SMBus and blocks RAM writes at boot.
 - **Config-driven:** everything lives in `config.json` schema v2 (Rule #4);

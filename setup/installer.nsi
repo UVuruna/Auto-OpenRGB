@@ -150,6 +150,7 @@ Section "!${APP_NAME} (required)" SecMain
     ; "Error opening file for writing" on UltraVivid.exe.
     nsExec::Exec 'schtasks /End /TN "Ultra Vivid daemon"'
     nsExec::Exec 'schtasks /End /TN "Ultra Vivid resolver"'
+    nsExec::Exec 'schtasks /End /TN "Ultra Vivid wake"'
     nsExec::Exec 'taskkill /F /IM "${APP_EXE}"'
     Sleep 500
 
@@ -255,6 +256,7 @@ Section "Uninstall"
     ; Stop the running app so its files are not locked during removal.
     nsExec::Exec 'schtasks /End /TN "Ultra Vivid daemon"'
     nsExec::Exec 'schtasks /End /TN "Ultra Vivid resolver"'
+    nsExec::Exec 'schtasks /End /TN "Ultra Vivid wake"'
     nsExec::Exec 'schtasks /End /TN "OpenRGB server"'
     nsExec::Exec 'taskkill /F /IM "${APP_EXE}"'
     Sleep 500
@@ -263,6 +265,8 @@ Section "Uninstall"
     ; Remove the scheduled tasks and the startup server script
 
     ExecWait 'schtasks /Delete /TN "Ultra Vivid resolver" /F'
+
+    ExecWait 'schtasks /Delete /TN "Ultra Vivid wake" /F'
 
     ExecWait 'schtasks /Delete /TN "Ultra Vivid daemon" /F'
 

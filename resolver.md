@@ -24,6 +24,11 @@ and — in Phase 2 — the hotkey daemon.
 - **Change detection:** the tick stores its last decision in
   `logs/state.json`; a 10-minute tick therefore costs nothing while the
   preset is unchanged.
+- **Power events bypass the cache:** the cached decision describes what we
+  last WROTE, not what the hardware currently shows — sleep and power-off
+  reset it (RGB RAM returns to its onboard effect). Log on and
+  resume-from-sleep therefore run `--force` from their own scheduled task,
+  never the cache-respecting tick — see [Tasks](core/tasks.md).
 - **Logging:** rotating `logs/resolver.log`; top-level failures are logged
   and re-raised — never swallowed (Rule #1).
 
@@ -33,5 +38,6 @@ and — in Phase 2 — the hotkey daemon.
 - [Core (folder)](core/__index.md) — settings, schedule, apply
 
 ### Used by
-- Task Scheduler task `Ultra Vivid resolver` — see [Tasks](core/tasks.md)
+- Task Scheduler tasks `Ultra Vivid resolver` (tick) and `Ultra Vivid wake`
+  (log on + resume, forced) — see [Tasks](core/tasks.md)
 - [Shortcuts (folder)](shortcuts/__index.md) — Synapse slot files

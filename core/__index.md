@@ -46,8 +46,10 @@ The single source of truth for where config/logs/data live — identical
 code from the repo and from the frozen single-exe. See [Paths](paths.md).
 
 ### `tasks.py` — Scheduled Tasks
-Registers the resolver + daemon tasks (pointing at whatever runs them)
-and the OpenRGB server startup. See [Tasks](tasks.md).
+Registers the tick, wake, and daemon tasks (pointing at whatever runs them)
+and the OpenRGB server startup. Waking is its own task because it must apply
+FORCED — after sleep the hardware no longer shows what the cache claims.
+See [Tasks](tasks.md).
 
 ### `updates.py` — Update Check
 Compares the latest GitHub release against the running version and offers

@@ -26,7 +26,7 @@ Automatic RGB lighting scheduling for Windows. Named colors are applied to selec
 %%{init: {'flowchart': {'subGraphTitleMargin': {'top': 0, 'bottom': 35}}}}%%
 flowchart LR
     subgraph TRIGGERS["Triggers"]
-        A[Task tick: log on / resume / 10 min]
+        A[Task: 10-min tick + forced wake on log on / resume]
         B[Synapse slot file]
         C[Hotkey daemon]
     end
@@ -125,7 +125,7 @@ Everything lives in `config.json` (schema v3). Full field reference: [Settings](
 
 ## ⌨️ Keyboard Shortcuts
 
-A shortcut **set** is created in the GUI: name it (e.g. "DUGA") → pick a selector (shift / ctrl / alt / combos / **hypershift** — offered only when a Razer keyboard is detected) → pick ANY keys (letters, number row, numpad, F-keys — free mix) → for each key bind either a **color** or a whole **preset** → **Create shortcut files**. A preset binding switches the active preset (it keeps running on the schedule) and applies its current color; a color binding just applies that color.
+A shortcut **set** is created in the GUI: name it (e.g. "Rainbow") → pick a selector (shift / ctrl / alt / combos / **hypershift** — offered only when a Razer keyboard is detected) → pick ANY keys (letters, number row, numpad, F-keys — free mix) → for each key bind either a **color** or a whole **preset** → **Create shortcut files**. A preset binding switches the active preset (it keeps running on the schedule) and applies its current color; a color binding just applies that color.
 
 - Every set gets its own folder `shortcuts/<SetName>/` with one VBS per key.
 - **Standard selectors**: the resident daemon registers the hotkeys itself within seconds — nothing manual ([Hotkey Daemon](hotkey_daemon.md)).
