@@ -1,6 +1,6 @@
 # Scheduled Tasks
 
-**Script:** [Tasks (script)](tasks.py)
+**Script:** [Tasks (script)](../tasks.py)
 
 ## Purpose
 Register the four Ultra Vivid scheduled tasks, from the repo OR the frozen
@@ -25,7 +25,8 @@ from sleep running its ONBOARD rainbow. A keyboard shortcut fixed it because a
 shortcut always applies. Wake events therefore get their own task whose action
 is `--force`: **after a power event the hardware state is unknown, so the
 cache must not be trusted.** The 10-min tick keeps the cache — that is what
-stops it from rewriting the devices 144 times a day.
+stops it from rewriting the devices 144 times a day. Regression-pinned by
+[tests](../../tests/___tests.md) (`test_tasks.py`).
 
 **Why OpenRGB runs as an elevated task (not the old Startup VBS):** the RAM
 SMBus needs administrator rights. A non-elevated instance can enumerate the
@@ -50,3 +51,7 @@ stay non-elevated.
 ## Connections
 ### Uses
 - [Paths](paths.md) — repo-vs-frozen action commands
+
+### Used by
+- [Main Window](../../gui/__about/main_window.md) (Install tasks… button),
+  `main.py` `--install-tasks` dispatch (Trivial tier, no separate doc)

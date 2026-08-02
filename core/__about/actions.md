@@ -1,12 +1,12 @@
 # Actions
 
-**Script:** [Actions (script)](actions.py)
+**Script:** [Actions (script)](../actions.py)
 
 ## Purpose
 The shared action behind a shortcut binding — used by BOTH the
-[Resolver](../resolver.md) (Synapse slot files) and the
-[Hotkey Daemon](../hotkey_daemon.md), so a keypress behaves identically
-whichever path fired it (Rule #5).
+[Resolver](../../__about/resolver.md) (Synapse slot files) and the
+[Hotkey Daemon](../../__about/hotkey_daemon.md), so a keypress behaves
+identically whichever path fired it (root Rule #5, no duplicate logic).
 
 ## Binding kinds
 
@@ -26,11 +26,13 @@ resolve_binding(config_path, binding):
     IF config.activePreset != binding.preset:
         config.activePreset = binding.preset
         write config.json               # the tick now follows it too
-    return schedule.resolve(config, now)   # schedule_enabled forced on,
-                                           # so the press always shows it
+    forced = config with schedule_enabled forced True
+    RETURN schedule.resolve(forced, now)   # press always shows the preset,
+                                           # even while the global schedule
+                                           # toggle is off
 ```
 
-A preset with no slot for the current moment resolves to None (all-off) —
+A preset with no slot for the current moment resolves to `None` (all-off) —
 the same rule the scheduled tick obeys.
 
 ## Connections
@@ -39,4 +41,4 @@ the same rule the scheduled tick obeys.
 - [Settings](settings.md), [Schedule](schedule.md)
 
 ### Used by
-- [Resolver](../resolver.md), [Hotkey Daemon](../hotkey_daemon.md)
+- [Resolver](../../__about/resolver.md), [Hotkey Daemon](../../__about/hotkey_daemon.md)
