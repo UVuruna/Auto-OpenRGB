@@ -103,7 +103,7 @@ python -m pytest tests              # schedule semantics golden tests
 
 ## ⚙️ Configuration
 
-Everything lives in `config.json` (schema v3). Full field reference: [Settings](core/settings.md).
+Everything lives in `config.json` (schema v3). Full field reference: [Settings](core/__about/settings.md).
 
 - **`colors`** — the DEFINED COLORS: a default palette plus any custom color (`{"cyan": ["00FFFF"]}`); N hex values distribute round-robin across the selected devices.
 - **`presets`** — the RULES: each preset has a name and ONE trigger type; `activePreset` names the one that runs:
@@ -117,7 +117,7 @@ Everything lives in `config.json` (schema v3). Full field reference: [Settings](
 | `daylight` | N day colors over the real sunrise→sunset arc (centered on solar noon), separate **morning** and **evening** civil-twilight colors, optional night colors; no night list = off at night |
 
 - **`devices`** — `{"mode": "exclude", "names": ["Razer"]}`: substring match, case-insensitive; `include` mode selects only the named ones.
-- **`location`** — picked in the GUI from the bundled 45k-city database (search or cascading combos); latitude, longitude and IANA timezone fill automatically and solar events are computed locally, no internet involved. Semantics detail: [Schedule](core/schedule.md).
+- **`location`** — picked in the GUI from the bundled 45k-city database (search or cascading combos); latitude, longitude and IANA timezone fill automatically and solar events are computed locally, no internet involved. Semantics detail: [Schedule](core/__about/schedule.md).
 
 ---
 
@@ -128,9 +128,9 @@ Everything lives in `config.json` (schema v3). Full field reference: [Settings](
 A shortcut **set** is created in the GUI: name it (e.g. "Rainbow") → pick a selector (shift / ctrl / alt / combos / **hypershift** — offered only when a Razer keyboard is detected) → pick ANY keys (letters, number row, numpad, F-keys — free mix) → for each key bind either a **color** or a whole **preset** → **Create shortcut files**. A preset binding switches the active preset (it keeps running on the schedule) and applies its current color; a color binding just applies that color.
 
 - Every set gets its own folder `shortcuts/<SetName>/` with one VBS per key.
-- **Standard selectors**: the resident daemon registers the hotkeys itself within seconds — nothing manual ([Hotkey Daemon](hotkey_daemon.md)).
-- **Razer Hypershift** (no automation API exists): the GUI opens the set's folder and Razer Synapse with a step-by-step guide — link each key's file to a Synapse LAUNCH binding ONCE; re-mapping colors later is a pure config change. See [Shortcuts (folder)](shortcuts/__index.md).
-- **Chroma module** (optional): the daemon can color the Razer keyboard through the Chroma REST API while Synapse keeps all key bindings — see [Chroma](core/chroma.md).
+- **Standard selectors**: the resident daemon registers the hotkeys itself within seconds — nothing manual ([Hotkey Daemon](__about/hotkey_daemon.md)).
+- **Razer Hypershift** (no automation API exists): the GUI opens the set's folder and Razer Synapse with a step-by-step guide — link each key's file to a Synapse LAUNCH binding ONCE; re-mapping colors later is a pure config change. See [Shortcuts (folder)](shortcuts/___shortcuts.md).
+- **Chroma module** (optional): the daemon can color the Razer keyboard through the Chroma REST API while Synapse keeps all key bindings — see [Chroma](core/__about/chroma.md).
 
 ---
 
@@ -152,16 +152,24 @@ A shortcut **set** is created in the GUI: name it (e.g. "Rainbow") → pick a se
 
 ## 📚 Documentation
 
+Every `.md` file in this project is reachable from here (enforced by
+`tests/test_doc_links.py`) — folder docs (`___name.md`) list their files
+with tier + links; each file's own doc sits in that folder's `__about/`
+(what it does) and, where a diagram genuinely helps, `__flow/` (how it
+works).
+
 | Area | Doc |
 |------|-----|
-| Engine | [Core (folder)](core/__index.md) → [Settings](core/settings.md), [Solar](core/solar.md), [Schedule](core/schedule.md), [Apply](core/apply.md), [Keymap](core/keymap.md), [Chroma](core/chroma.md) |
-| Entry point | [Resolver](resolver.md) |
-| Daemon | [Hotkey Daemon](hotkey_daemon.md) |
-| Scheduled tasks | [Tasks](core/tasks.md) · [Paths](core/paths.md) |
-| Synapse slots | [Shortcuts (folder)](shortcuts/__index.md) |
-| Control panel | [GUI (folder)](gui/__index.md) |
-| Auto-update | [Updates](core/updates.md) |
-| Build pipeline | [Setup (folder)](setup/__setup.md) |
+| Engine | [Core (folder)](core/___core.md) → Settings, Solar, Schedule, Apply, Actions, Keymap, Chroma, World Locations, Paths, Tasks, Updates |
+| Entry point | [Resolver](__about/resolver.md) ([flow](__flow/resolver.md)) |
+| Daemon | [Hotkey Daemon](__about/hotkey_daemon.md) ([flow](__flow/hotkey_daemon.md)) |
+| Control panel | [GUI (folder)](gui/___gui.md) → Colors/Presets/Devices/Shortcuts tabs, Theme, Widgets, Location Picker |
+| Synapse slots | [Shortcuts (folder)](shortcuts/___shortcuts.md) |
+| Bundled data | [Data (folder)](data/___data.md) |
+| Build pipeline | [Setup (folder)](setup/___setup.md) |
+| Tests | [Tests (folder)](tests/___tests.md) |
+| Icons/QSS assets | [Assets](assets/README.md) |
 | AI guidance | [CLAUDE.md](CLAUDE.md) |
+| Open decisions | [Open Questions](OPEN-QUESTIONS.md) |
 
-The GUI checks GitHub for a newer release on startup and shows an **Update to vX** button when one exists (download installer → launch → quit). Disable with `update.check: false` in config.
+The GUI checks GitHub for a newer release on startup and shows an **Update to vX** button when one exists (download installer → launch → quit). Disable with `update.check: false` in config. See [Updates](core/__about/updates.md).

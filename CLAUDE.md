@@ -1,9 +1,22 @@
 # CLAUDE.md — Ultra Vivid
 
-Project-specific guidance for Claude Code. **Inherits ALL rules from the
-monorepo root [CLAUDE.md](../../CLAUDE.md)** (mandatory workflow, Priorities,
-Rules #1–#18, markdown guidelines, build pipeline, py-spy profiling) — read
-that first; only project facts and deltas live here.
+The monorepo constitution governs: read the root `CLAUDE.md` first, then
+load ONLY the rulebook your job needs via its Router. Nothing universal is
+restated here — this file carries project FACTS and project DELTAS, and
+may only tighten root rules, never loosen them.
+
+| Your job this session | Read (monorepo root) |
+|-----------------------|----------------------|
+| Implement / fix | `rules/CODE.md` + the folder's `___folder.md` |
+| Any GUI work | `rules/GUI.md` + `DESIGN.md` |
+| Write documentation | `rules/DOCS.md` |
+| Build / release | `rules/SHIP.md` |
+| Split a god-file | `REFACTOR-GODFILES.md` |
+| Plan / brainstorm | `rules/PLAN.md` |
+
+Start here for the code itself: [README](README.md) →
+[Core (folder)](core/___core.md) / [GUI (folder)](gui/___gui.md). Open
+decisions live in [Open Questions](OPEN-QUESTIONS.md).
 
 ---
 
@@ -13,7 +26,8 @@ that first; only project facts and deltas live here.
   user-selected subset of OpenRGB devices by ONE schedule grouping (hours /
   weekdays / monthdays / months / solar daylight) plus keyboard shortcuts.
   **Compute, don't generate (root Rule #19):** no `.orp` profiles, no
-  per-combination scripts — `resolver.py` computes the color for any moment.
+  per-combination scripts — [Resolver](__about/resolver.md) computes the
+  color for any moment.
 - **Stack:** Python 3.13 (`openrgb-python` SDK client, `astral` solar math —
   same library/convention as DOMY Watch), four Task Scheduler tasks
   (`OpenRGB server`: log on, **elevated** `--server` — RAM SMBus needs admin;
@@ -21,15 +35,17 @@ that first; only project facts and deltas live here.
   log on + resume, `--force` — a power event resets the hardware, so the
   cache must not be trusted; `Ultra Vivid daemon`: resident, hotkeys +
   Chroma), PySide6 GUI (`python -m gui.app`).
-  `core/tasks.py` also removes a conflicting auto-start `OpenRGB` *service*
-  that otherwise owns the SMBus and blocks RAM writes at boot.
-- **Config-driven:** everything lives in `config.json` schema v2 (Rule #4);
-  `core/settings.py` validates loudly and refuses old-schema configs.
+  [Tasks](core/__about/tasks.md) also removes a conflicting auto-start
+  `OpenRGB` *service* that otherwise owns the SMBus and blocks RAM writes
+  at boot.
+- **Config-driven:** everything lives in `config.json` schema v3 (root
+  Rule #4); [Settings](core/__about/settings.md) validates loudly and
+  refuses old-schema configs.
 - **Synapse boundary (researched 2026-07-22):** Razer Synapse bindings have
   NO automation API and Hypershift never reaches the OS — hence the stable
-  `shortcuts/slot-*.vbs` contract (bind LAUNCH once, re-map via config).
-  Razer keyboard lighting IS programmable via Chroma REST API (Phase 3
-  optional module).
+  `shortcuts/<SetName>/*.vbs` contract (bind LAUNCH once, re-map via
+  config). Razer keyboard lighting IS programmable via the Chroma REST API
+  (see [Chroma](core/__about/chroma.md)).
 
 ## Data Flow
 
@@ -46,20 +62,14 @@ flowchart LR
 
 ## Project Deltas to the Root Rules
 
-- **Folder docs use `__index.md`** (double underscore) inside each folder, not
-  the root's `___folder.md`. Generated files (`.vbs`, `.bat`) get no individual
-  doc — they are described in the folder's `__index.md`. Script files
-  (`.ps1`, `.py`) get a `.md` beside them.
 - **Commit format uses a conventional-commit type:**
   `MAJOR.MINOR.NNN type(scope): description` (e.g.
-  `0.1.040 feat(gui): keyboard shortcuts`, `0.1.030 fix(gui): ...`). Patch is
-  zero-padded to 3 digits and increments by 10 per commit; the version lives in
+  `0.1.351 docs(core): migrate to MD-First 2.0`). Patch is zero-padded to 3
+  digits; increments by 1 for a same-session related commit and by more for
+  unrelated work, per the root convention. The version lives in
   `version.py` (single source of truth, updated before committing, read by
   `setup/build.py`).
+- **`setup/build.py` is the monorepo's REFERENCE implementation** of the
+  Step-7 fail-closed verify gate (root `CLAUDE.md` → Build & Release
+  System) — other projects copy this pattern; change it with extra care.
 - Communicate in Serbian (Latin); everything in files stays English.
-
-## Key Documentation
-
-- [README.md](README.md) — overview, usage, technical documentation
-- Engine: `core/__index.md` (settings, schedule, solar, apply, actions, tasks, paths, locations, chroma, keymap), `resolver.md`, `hotkey_daemon.md`, `shortcuts/__index.md`
-- GUI: `gui/__index.md` (PySide6 control panel, `python -m gui.app`)
