@@ -2,6 +2,7 @@
 GUI (key picker) and the hotkey daemon (RegisterHotKey), so the two can
 never drift. The user picks ANY combination of these keys for a set."""
 
+# ═══════════════════════════ VIRTUAL KEYS ═══════════════════════════
 # label -> Win32 virtual-key code
 VIRTUAL_KEYS: dict[str, int] = {
     **{f"F{n}": 0x70 + n - 1 for n in range(1, 13)},
@@ -15,6 +16,7 @@ VIRTUAL_KEYS: dict[str, int] = {
     ";": 0xBA, "'": 0xDE, ",": 0xBC, ".": 0xBE, "/": 0xBF, "`": 0xC0,
 }
 
+# ═══════════════════════════ KEY GROUPS (GUI display) ═══════════════════════════
 # GUI key-picker groups (display only — any mix of keys goes in one set)
 KEY_GROUPS: dict[str, list[str]] = {
     "Function keys": [f"F{n}" for n in range(1, 13)],
@@ -25,6 +27,7 @@ KEY_GROUPS: dict[str, list[str]] = {
                + list("zxcvbnm") + [",", ".", "/", "`"],
 }
 
+# ═══════════════════════════ MODIFIER FLAGS ═══════════════════════════
 # selector -> RegisterHotKey modifier flags (MOD_ALT=1, MOD_CONTROL=2, MOD_SHIFT=4)
 MODIFIER_FLAGS: dict[str, int] = {
     "shift": 0x4,
