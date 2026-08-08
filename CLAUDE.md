@@ -8,7 +8,7 @@ may only tighten root rules, never loosen them.
 | Your job this session | Read (monorepo root) |
 |-----------------------|----------------------|
 | Implement / fix | `rules/CODE.md` + the folder's `___folder.md` |
-| Any GUI work | `rules/GUI.md` + `DESIGN.md` |
+| Any GUI work | `rules/GUI.md` + `DESIGN.md` (incl. Zubi v2 algorithmic teeth — pending rollout, see below) |
 | Write documentation | `rules/DOCS.md` |
 | Build / release | `rules/SHIP.md` |
 | Split a god-file | `REFACTOR-GODFILES.md` |
@@ -25,9 +25,9 @@ decisions live in [Open Questions](OPEN-QUESTIONS.md).
 - **Product:** rule-based RGB scheduling. Color presets are applied to a
   user-selected subset of OpenRGB devices by ONE schedule grouping (hours /
   weekdays / monthdays / months / solar daylight) plus keyboard shortcuts.
-  **Compute, don't generate (root Rule #19):** no `.orp` profiles, no
-  per-combination scripts — [Resolver](__about/resolver.md) computes the
-  color for any moment.
+  **Compute, don't generate** (Compute, Don't Generate — rules/CODE.md): no
+  `.orp` profiles, no per-combination scripts — [Resolver](__about/resolver.md)
+  computes the color for any moment.
 - **Stack:** Python 3.13 (`openrgb-python` SDK client, `astral` solar math —
   same library/convention as DOMY Watch), four Task Scheduler tasks
   (`OpenRGB server`: log on, **elevated** `--server` — RAM SMBus needs admin;
@@ -38,9 +38,9 @@ decisions live in [Open Questions](OPEN-QUESTIONS.md).
   [Tasks](core/__about/tasks.md) also removes a conflicting auto-start
   `OpenRGB` *service* that otherwise owns the SMBus and blocks RAM writes
   at boot.
-- **Config-driven:** everything lives in `config.json` schema v3 (root
-  Rule #4); [Settings](core/__about/settings.md) validates loudly and
-  refuses old-schema configs.
+- **Config-driven:** everything lives in `config.json` schema v3 (THE CONFIG
+  SECTION LAW — rules/CODE.md); [Settings](core/__about/settings.md) validates
+  loudly and refuses old-schema configs.
 - **Synapse boundary (researched 2026-07-22):** Razer Synapse bindings have
   NO automation API and Hypershift never reaches the OS — hence the stable
   `shortcuts/<SetName>/*.vbs` contract (bind LAUNCH once, re-map via
@@ -72,7 +72,8 @@ flowchart LR
 - **`setup/build.py` is the monorepo's REFERENCE implementation** of the
   Step-7 fail-closed verify gate (root `CLAUDE.md` → Build & Release
   System) — other projects copy this pattern; change it with extra care.
-- Communicate in Serbian (Latin); everything in files stays English.
+- Language: per root CLAUDE.md → Universal Conduct (Serbian/Latin in
+  conversation, English in every file). No tightening beyond root here.
 
 ## Layout Teeth — pending migration (2026-08-06)
 
@@ -83,3 +84,8 @@ bites in every session; what this project still owes is the per-project
 audit — window registry, computed minimums fitting 1280x720, screenshots
 opened and graded >= 8/10. Reference implementations: Remote User
 (tests/test_layout_audit_qt.py) and DOMY Watch (tests/test_layout_audit.py).
+
+GUI work here is also governed by Zubi v2 — Algorithmic Teeth & Grader v2
+(../../rules/GUI.md#zubi-v2). No `layout_checks_qt.py`/`test_layout_audit_qt.py`
+found in `tests/` — status here is **pending rollout**, same as the layout
+migration above.
