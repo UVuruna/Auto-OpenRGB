@@ -1,4 +1,4 @@
-"""Location picker — DOMY Watch's city system over the 45k-city database.
+"""Location picker — Watch Academy's city system over the 45k-city database.
 
 Live search (type 2+ letters, click a suggestion) plus cascading
 Continent / Subregion / Country / Region / City combos. Picking a city

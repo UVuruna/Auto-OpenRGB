@@ -1,4 +1,4 @@
-"""World locations repository — the same 45k-city system as DOMY Watch.
+"""World locations repository — the same 45k-city system as Watch Academy.
 
 Hierarchy: Continent -> Subregion -> Country -> [Admin ->] City, with
 MIXED depth — children are classified by shape ("latitude" in value =

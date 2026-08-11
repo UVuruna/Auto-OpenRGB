@@ -1,7 +1,7 @@
 """Sun events for the daylight schedule type.
 
 Thin wrapper around astral (same library and civil-twilight convention
-as the DOMY Watch project). Events that do not occur on a given day at
+as the Watch Academy project). Events that do not occur on a given day at
 the given latitude are None — documented astral behavior, not an error.
 """
 

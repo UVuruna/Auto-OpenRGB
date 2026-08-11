@@ -4,7 +4,7 @@
 **Flow:** [diagram](../__flow/locations.md)
 
 ## Purpose
-The DOMY Watch 45k-city database repository (`data/world_locations.json`):
+The Watch Academy 45k-city database repository (`data/world_locations.json`):
 a cascading tree (`Continent -> Subregion -> Country -> [Admin ->] City`,
 MIXED depth) plus folded-name search. Picking a city fills latitude,
 longitude and the IANA timezone automatically — the user NEVER types a

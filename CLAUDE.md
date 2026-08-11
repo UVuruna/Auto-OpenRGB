@@ -29,7 +29,7 @@ decisions live in [Open Questions](OPEN-QUESTIONS.md).
   `.orp` profiles, no per-combination scripts — [Resolver](__about/resolver.md)
   computes the color for any moment.
 - **Stack:** Python 3.13 (`openrgb-python` SDK client, `astral` solar math —
-  same library/convention as DOMY Watch), four Task Scheduler tasks
+  same library/convention as Watch Academy), four Task Scheduler tasks
   (`OpenRGB server`: log on, **elevated** `--server` — RAM SMBus needs admin;
   `Ultra Vivid resolver`: 10-min tick, cache-respecting; `Ultra Vivid wake`:
   log on + resume, `--force` — a power event resets the hardware, so the
@@ -82,8 +82,8 @@ work here follows [MIGRATE-LAYOUT.md](../../MIGRATE-LAYOUT.md) +
 [GUI Rules](../../rules/GUI.md): the machine-wide layout guard already
 bites in every session; what this project still owes is the per-project
 audit — window registry, computed minimums fitting 1280x720, screenshots
-opened and graded >= 8/10. Reference implementations: Remote User
-(tests/test_layout_audit_qt.py) and DOMY Watch (tests/test_layout_audit.py).
+opened and graded >= 8/10. Reference implementations: Vibe Coder
+(tests/test_layout_audit_qt.py) and Watch Academy (tests/test_layout_audit.py).
 
 GUI work here is also governed by Zubi v2 — Algorithmic Teeth & Grader v2
 (../../rules/GUI.md#zubi-v2). No `layout_checks_qt.py`/`test_layout_audit_qt.py`

@@ -4,7 +4,7 @@
 **Flow:** [diagram](../__flow/location_picker.md)
 
 ## Purpose
-DOMY Watch's city system over the 45k-city database
+Watch Academy's city system over the 45k-city database
 ([World Locations](../../core/__about/locations.md)). Live search (type 2+
 letters, click a suggestion) plus cascading Continent / Subregion / Country
 / Region / City combos. Picking a city fills latitude, longitude and the
