@@ -7,7 +7,8 @@ Four tasks (all point at whatever is running us):
                             talk to.
   - "Ultra Vivid resolver"  10-min tick, cache-respecting (a tick whose
                             decision did not change applies nothing)
-  - "Ultra Vivid wake"      log on + resume-from-sleep, resolver --force
+  - "Ultra Vivid wake"      log on + resume-from-sleep (TWO power events),
+                            resolver --force
   - "Ultra Vivid daemon"    log on, resident (hotkeys + optional Chroma)
 
 WHY the wake path is a SEPARATE task: a Task Scheduler task has ONE action for
@@ -127,7 +128,17 @@ $resume = New-CimInstance -CimClass $eventClass -ClientOnly
 $resume.Subscription = '<QueryList><Query Id="0" Path="System"><Select Path="System">*[System[Provider[@Name=''Microsoft-Windows-Power-Troubleshooter''] and EventID=1]]</Select></Query></QueryList>'
 $resume.Enabled = $true
 
-$wTask = New-ScheduledTask -Action $wakeAction -Trigger @($logon, $resume) -Settings $rSettings
+# SECOND resume trigger. Power-Troubleshooter/1 is not logged on every wake:
+# on this class of machine the Kernel-Power/107 resumes and the
+# Power-Troubleshooter/1 resumes were two DISJOINT sets, so half the wakes
+# never ran the forced apply at all. Both triggers on one task is safe —
+# Task Scheduler's default MultipleInstances policy ignores the second start
+# while the first is still running, and a repeated forced apply is idempotent.
+$resumeKernel = New-CimInstance -CimClass $eventClass -ClientOnly
+$resumeKernel.Subscription = '<QueryList><Query Id="0" Path="System"><Select Path="System">*[System[Provider[@Name=''Microsoft-Windows-Kernel-Power''] and EventID=107]]</Select></Query></QueryList>'
+$resumeKernel.Enabled = $true
+
+$wTask = New-ScheduledTask -Action $wakeAction -Trigger @($logon, $resume, $resumeKernel) -Settings $rSettings
 $wTask.Author = "UV"
 Register-ScheduledTask -TaskName "{WAKE_TASK}" -InputObject $wTask -Force | Out-Null
 Write-Host "Registered: {WAKE_TASK}"

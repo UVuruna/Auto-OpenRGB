@@ -41,7 +41,10 @@ class OpenRGBSettings:
     # everything except a slow device (e.g. RGB RAM). See apply.wait_until_ready.
     ready_poll_seconds: float      # gap between device-list polls while waiting
     ready_stable_checks: int       # first-run fallback: count unchanged this many polls = complete
-    ready_timeout_seconds: float   # give up waiting after this (0 = don't wait), then apply + warn
+    ready_timeout_seconds: float   # one waiting round (0 = don't wait at all)
+    rescan_rounds: int             # ask the server to RE-DETECT and wait again, this many times
+    verify_retries: int            # re-apply attempts while the hardware reads back wrong
+    count_drop_confirmations: int  # runs in a row with fewer devices before learning the lower count
 
 
 @dataclass(frozen=True)
@@ -162,6 +165,9 @@ def parse(raw: dict) -> Settings:
             ready_poll_seconds=float(o.get("readyPollSeconds", 0.5)),
             ready_stable_checks=int(o.get("readyStableChecks", 3)),
             ready_timeout_seconds=float(o.get("readyTimeoutSeconds", 30)),
+            rescan_rounds=int(o.get("rescanRounds", 2)),
+            verify_retries=int(o.get("verifyRetries", 2)),
+            count_drop_confirmations=int(o.get("countDropConfirmations", 3)),
         ),
         location=_parse_location(raw),
         devices=DeviceFilter(mode=dev["mode"], names=list(dev.get("names", []))),

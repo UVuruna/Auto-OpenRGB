@@ -16,7 +16,8 @@ can exist; `activePreset` names the one the resolver follows.
 ```
 version: 3
 openrgb:         host, port, connectRetries, retrySeconds,
-                 readyPollSeconds, readyStableChecks, readyTimeoutSeconds
+                 readyPollSeconds, readyStableChecks, readyTimeoutSeconds,
+                 rescanRounds, verifyRetries, countDropConfirmations
                  (device-readiness wait — see Apply.wait_until_ready);
                  config.json ALSO carries "path" here, but it is read
                  directly by core.tasks (_openrgb_path), never through

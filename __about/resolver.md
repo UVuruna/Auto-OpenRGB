@@ -26,6 +26,15 @@ actions (which shell out to it, and import `write_set_folder` directly).
 - **Change detection:** the tick stores its last decision in
   `logs/state.json`; a 10-minute tick therefore costs nothing while the
   preset is unchanged. `--force` bypasses the cache.
+- **The cache is written ONLY on a verified apply** (2026-08-21):
+  [Apply](../core/__about/apply.md) returns an `ApplyResult`, and
+  `lastColor` is stored only when it is `trustworthy` — every selected
+  device present AND reading its color back correctly. An unverified apply
+  writes `{"unverifiedColor": ...}` with NO `lastColor` key, so the next
+  tick can never mistake it for "already done". Writing the intended color
+  regardless was the defect that left the RGB RAM uncolored for a whole
+  session: a partial apply at log on cached success, and every tick after it
+  answered `Unchanged since last tick — skipping apply`.
 - **Power events bypass the cache:** the cached decision describes what we
   last WROTE, not what the hardware currently shows — sleep and power-off
   reset it (RGB RAM returns to its onboard effect). Log on and

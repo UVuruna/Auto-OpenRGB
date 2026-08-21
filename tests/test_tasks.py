@@ -57,3 +57,15 @@ def test_tick_action_keeps_the_cache():
     devices, which is what the state cache exists to avoid."""
     script = tasks._build_script()
     assert "--force" not in _action_argument(script, "resolverAction")
+
+
+def test_both_resume_events_drive_the_wake_task():
+    """REGRESSION (2026-08-21): the wake task listened ONLY to
+    Power-Troubleshooter/1. On his machine the Kernel-Power/107 resumes and
+    the Power-Troubleshooter/1 resumes were two DISJOINT sets — half the
+    wakes never ran the forced apply at all."""
+    wake_block = _task_block(tasks._build_script(), tasks.WAKE_TASK)
+    assert "Microsoft-Windows-Power-Troubleshooter" in wake_block
+    assert "Microsoft-Windows-Kernel-Power" in wake_block
+    assert "EventID=107" in wake_block
+    assert "-Trigger @($logon, $resume, $resumeKernel)" in wake_block

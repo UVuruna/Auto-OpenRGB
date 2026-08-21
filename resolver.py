@@ -72,6 +72,32 @@ def _write_state(color: str | None) -> None:
     )
 
 
+def _write_unverified_state(color: str | None) -> None:
+    """Record an apply the hardware did NOT confirm — deliberately WITHOUT a
+    `lastColor` key, so the next tick can never read it as "already done".
+
+    Writing the intended color here regardless was the bug: after a partial
+    apply (a device still missing from the OpenRGB list) the state claimed
+    success, and every following tick answered "Unchanged since last tick"
+    forever. The missing device kept its old color until the next reboot.
+    """
+    STATE_PATH.write_text(
+        json.dumps({"unverifiedColor": color, "at": datetime.now().isoformat()}),
+        encoding="utf-8",
+    )
+
+
+def _apply_and_remember(cfg, color: str | None) -> None:
+    """Apply the color and cache it ONLY if the hardware confirmed it."""
+    result = rgb.apply_color(cfg, color)
+    if result.trustworthy:
+        _write_state(color)
+        return
+    _write_unverified_state(color)
+    logger.warning("Not caching %r (%s) — the next tick will apply it again.",
+                   color, result.reason())
+
+
 def _shortcut_binding(cfg, spec: str) -> dict | None:
     """Resolve 'SetName:key' (e.g. 'Rainbow:q') to its binding —
     {"color": name} or {"preset": name}.
@@ -187,8 +213,7 @@ def main() -> None:
         return
 
     if args.off:
-        rgb.apply_color(cfg, None)
-        _write_state(None)
+        _apply_and_remember(cfg, None)
         return
 
     if args.color or args.shortcut:
@@ -202,8 +227,7 @@ def main() -> None:
                 return  # unbound slot: documented no-op
             color = actions.resolve_binding(CONFIG_PATH, binding)
             cfg = settings_mod.load(CONFIG_PATH)  # activePreset may have changed
-        rgb.apply_color(cfg, color)
-        _write_state(color)
+        _apply_and_remember(cfg, color)
         return
 
     # Scheduled tick
@@ -218,8 +242,7 @@ def main() -> None:
     if not args.force and "lastColor" in state and state["lastColor"] == color:
         logger.info("Unchanged since last tick — skipping apply.")
         return
-    rgb.apply_color(cfg, color)
-    _write_state(color)
+    _apply_and_remember(cfg, color)
 
 
 if __name__ == "__main__":
